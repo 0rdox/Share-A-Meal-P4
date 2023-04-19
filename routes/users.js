@@ -1,4 +1,5 @@
 var express = require('express');
+const createHttpError = require('http-errors');
 var router = express.Router();
 
 
@@ -55,7 +56,7 @@ router.get('/:userid', function(req, res, next) {
     const userId = parseInt(req.params.userid);
     const user = results.find(user => user.id === userId);
     if (!user) {
-        res.status(404).send('User not found.')
+        next(createHttpError(404));
     } else {
         res.json(user);
     }

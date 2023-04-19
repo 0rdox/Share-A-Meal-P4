@@ -1,6 +1,7 @@
 //LOG app starting
 console.log("Starting app...")
 
+//CHECK HTTP STATUS CODES
 
 //What does this do
 var createError = require('http-errors');
@@ -17,17 +18,25 @@ var app = express();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var registerRouter = require('./routes/register');
-var profile = require('./routes/profile');
+var profileRouter = require('./routes/profile');
+var infoRouter = require('./routes/info');
 
 //Link .js with routes
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
 app.use('/api/register', registerRouter);
-app.use('/api/profile', profile);
+app.use('/api/profile', profileRouter);
+app.use('/api/info', infoRouter)
 
 
+//What does this do // maybe delete
+app.use('*', (req, res, next) => {
+    const method = req.method;
+    console.log('Method ' + $(method) + 'is called');
+    next();
+})
 
-//What does this do
+//What does this do // keep
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -55,25 +64,6 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-module.exports = app;
-
-//Deze onderdelen mogen weg
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
-app.post('/', (req, res) => {
-    res.send('Got a POST request')
-})
-
-app.put('/user', (req, res) => {
-    res.send('Got a PUT request at /user')
-})
-
-app.delete('/user', (req, res) => {
-    res.send('Got a DELETE request at /user')
-})
-
 //IMAGES
 app.use('/kitten', express.static('public'))
 
@@ -85,31 +75,4 @@ app.get('/kitten', (req, res) => {
 //LOG App Started
 console.log("App Started.")
 
-
-
-//MAG WEG
-app.get('api/register', (req, res) => {
-    res.send("Register a user here")
-})
-
-
-
-
-//UC 201 - MAG WEG
-app.post('api/register', (req, res) => {
-    const newUser = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        street: req.body.street,
-        city: req.body.city,
-        password: req.body.password,
-        emailAdress: req.body.emailAdress,
-    };
-    console.log("User added " + firstName + " " + lastName);
-    res.end(JSON.stringify(newUser));
-})
-
-//UC 202 - MAG WEG
-app.get('api/user'), (req, res) => {
-
-}
+module.exports = app;
