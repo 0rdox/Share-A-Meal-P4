@@ -1,7 +1,7 @@
 var express = require('express');
 const createHttpError = require('http-errors');
 var router = express.Router();
-
+const assert = require('assert');
 router.use(express.json());
 
 
@@ -50,29 +50,44 @@ router.get('/test', function(req, res, next) {
 let index = results.length;
 //REGISTER USER
 router.post('/', (req, res) => {
-    const testUser = {
-        id: index,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        street: req.body.street,
-        city: req.body.city,
-        password: req.body.password,
-        emailAddress: req.body.emailAddress,
+    //USER
+    const user = {
+            id: index++,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            street: req.body.street,
+            city: req.body.city,
+            isActive: true,
+            emailAddress: req.body.emailAddress,
+            phoneNumber: req.body.phoneNumber,
+        }
+        //ASSERT
+
+    try {
+        assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'firstName must be a non-empty string');
+        assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'lastName must be a non-empty string');
+        assert(typeof user.emailAddress === 'string' && validateEmail(user.emailAddress), 'emailAddress must be a valid emailaddress');
+    } catch (err) {
+        //STATUS ERROR
+        res.status(400).json({
+            status: 400,
+            message: err.message.toString(),
+            data: {},
+        });
+        return;
     }
 
-    console.log("Adding user");
-    console.log("User added");
-    results.push(testUser);
 
-    //STATUS  CHECK IF STATUS IS 200 OR 201 --> UPDATE IN TEST
+    //INCREASE INDEX BY 1 AND PUSH TO DATABASE
+
+    results.push(user);
+    //STATUS SUCCEEDED
     res.status(200).json({
         status: 200,
         message: 'User added',
-        data: testUser,
+        data: user,
     })
-    index++;
     res.end();
-
 })
 
 
@@ -108,5 +123,16 @@ router.delete('/:userid', function(req, res, next) {
         console.log("User deleted.");
     }
 })
+
+
+//EMAIL VALIDATION
+function validateEmail(email) {
+    const re = /^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[A-Za-z]{2,}$/;
+    console.log(String(email));
+    return re.test(String(email).toLowerCase());
+}
+
+
+
 
 module.exports = router;
