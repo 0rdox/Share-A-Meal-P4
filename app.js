@@ -1,5 +1,5 @@
 //LOG app starting
-console.log("Starting app...")
+console.log("Starting server...")
 
 //CHECK HTTP STATUS CODES
 
@@ -17,14 +17,12 @@ var app = express();
 //ROUTES
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var registerRouter = require('./routes/register');
 var profileRouter = require('./routes/profile');
 var infoRouter = require('./routes/info');
 
 //Link .js with routes
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
-app.use('/api/register', registerRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/info', infoRouter)
 
@@ -73,6 +71,6 @@ app.get('/kitten', (req, res) => {
 });
 
 //LOG App Started
-console.log("App Started.")
+console.log("Server Started.")
 
 module.exports = app;

@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 
 //USER TESTCASES
 describe('TC-20x - User', () => {
-    //TESTCASE 201
+    //TESTCASE 201 -------------------------------------------------------------------------------------------------
     describe('TC-201 Registreren als nieuwe user', () => {
         it('TC-201-1 Verplicht veld ontbreekt', (done) => {
             chai.request(server)
@@ -128,34 +128,51 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-    });
-    it('TC-201-5 Gebruiker succesvol geregistreerd', (done) => {
-        chai.request(server)
-            .post('/api/user')
-            .send({
-                firstName: 'Derek',
-                lastName: 'Peters',
-                street: '123 Main St',
-                city: 'Anytown',
-                emailAddress: 'd.peters@avans.nl',
-                phoneNumber: '555-1234',
-                password: 'Password1234'
-            })
-            .end((err, res) => {
-                res.body.should.be.an('object');
-                res.body.should.has.property('status', 201);
-                res.body.should.has.property('message');
-                res.body.should.has.property('data').to.not.be.empty;
+        it('TC-201-5 Gebruiker succesvol geregistreerd', (done) => {
+            chai.request(server)
+                .post('/api/user')
+                .send({
+                    firstName: 'Derek',
+                    lastName: 'Peters',
+                    street: '123 Main St',
+                    city: 'Anytown',
+                    emailAddress: 'd.peters@avans.nl',
+                    phoneNumber: '555-1234',
+                    password: 'Password1234'
+                })
+                .end((err, res) => {
+                    res.body.should.be.an('object');
+                    res.body.should.has.property('status', 201);
+                    res.body.should.has.property('message');
+                    res.body.should.has.property('data').to.not.be.empty;
 
-                let { firstName, lastName, emailAddress } = res.body.data;
-                firstName.should.be.a('string').to.be.equal('Derek');
-                lastName.should.be.a('string').to.be.equal('Peters');
-                emailAddress.should.be.a('string').to.be.equal('d.peters@avans.nl');
-                done();
-            });
+                    let { firstName, lastName, emailAddress } = res.body.data;
+                    firstName.should.be.a('string').to.be.equal('Derek');
+                    lastName.should.be.a('string').to.be.equal('Peters');
+                    emailAddress.should.be.a('string').to.be.equal('d.peters@avans.nl');
+                    done();
+                });
+        });
     });
-});
-//TESTCASE 202
-describe('TC-202 ... ...', () => {
+    //TESTCASE 202 -------------------------------------------------------------------------------------------------
+    describe('TC-202 Opvragen van overzicht users', () => {
+        it('TC-202-1 Opvragen van overzicht users', (done) => {
+            chai.request(server)
+                .get('/api/user')
+                .end((err, res) => {
+                    res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
+                    res.should.have.status(200);
+                    done();
+                });
+        });
+        it('TC-202-2 Toon gebruikers met zoekterm op niet-bestaande velden', (done) => {
+            chai.request(server)
+                .get('/api/user?fakeFilter=fake')
+                .end((err, res) => {
+                    res.body.should.have.property('data').that.is.empty;
+                    done();
+                });
 
+        });
+    })
 });

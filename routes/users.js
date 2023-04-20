@@ -9,6 +9,8 @@ passwordMap['j.evans@server.com'] = 'Eendenbeker12';
 passwordMap['g.ernst@server.com'] = 'Gijskoektrommel1';
 passwordMap['e.garm@server.com'] = '123PASS123';
 
+
+
 //HARDCODE list of users (In Memory Database)
 var results = [{
     id: 1,
@@ -42,13 +44,40 @@ var results = [{
 
 //GET ALL USERS
 router.get('/', function(req, res, next) {
-    res.json(results);
-});
+    let filteredResults = results;
 
-//GET USERS BY FILTERS
-router.get('/test', function(req, res, next) {
-    //
-})
+    const firstName = req.query.firstName;
+    const lastName = req.query.lastName;
+    const emailAddress = req.query.emailAddress;
+    const isActive = req.query.isActive;
+
+    // FILTERS
+    if (firstName) {
+        filteredResults = filteredResults.filter(user => user.firstName.toLowerCase() === firstName.toLowerCase());
+    }
+
+    if (lastName) {
+        filteredResults = filteredResults.filter(user => user.lastName.toLowerCase() === lastName.toLowerCase());
+    }
+
+    if (emailAddress) {
+        filteredResults = filteredResults.filter(user => user.emailAddress.toLowerCase() === emailAddress.toLowerCase());
+    }
+
+    if (isActive !== undefined) {
+        const isActiveBoolean = isActive === "true";
+        filteredResults = filteredResults.filter(user => user.isActive === isActiveBoolean);
+    }
+
+    //IF FILTERS DON'T MATCH, RETURN NOTHING
+    if (!firstName && !lastName && !emailAddress && !isActive && Object.keys(req.query).length !== 0) {
+        filteredResults = [];
+    }
+    // RETURN RESULTS
+    res.status(200).json({
+        data: filteredResults,
+    });
+});
 
 
 let index = results.length;
@@ -61,7 +90,7 @@ router.post('/', (req, res) => {
             lastName: req.body.lastName,
             street: req.body.street,
             city: req.body.city,
-            isActive: true,
+            isActive: req.body.isActive === undefined ? true : req.body.isActive,
             emailAddress: req.body.emailAddress,
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,
