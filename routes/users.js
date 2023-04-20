@@ -4,10 +4,14 @@ var router = express.Router();
 const assert = require('assert');
 router.use(express.json());
 
+var passwordMap = {};
+passwordMap['j.evans@server.com'] = 'Eendenbeker12';
+passwordMap['g.ernst@server.com'] = 'Gijskoektrommel1';
+passwordMap['e.garm@server.com'] = '123PASS123';
 
 //HARDCODE list of users (In Memory Database)
 var results = [{
-    id: 0,
+    id: 1,
     firstName: "John",
     lastName: "Evans",
     street: "Lovendijkstraat 61",
@@ -16,22 +20,22 @@ var results = [{
     emailAddress: "j.evans@server.com",
     phoneNumber: "06 12425475"
 }, {
-    id: 1,
-    firstName: "Dave",
-    lastName: "Peters",
-    street: "Hogeschoollaan 32",
-    city: "breda",
+    id: 2,
+    firstName: "Gijs",
+    lastName: "Ernst",
+    street: "sacrementsstraat 1",
+    city: "Leeuwarden",
     isActive: true,
-    emailAddress: "d.peters@server.com",
+    emailAddress: "g.ernst@server.com",
     phoneNumber: "06 29481919"
 }, {
-    id: 2,
+    id: 3,
     firstName: "Elliot",
     lastName: "Garm",
     street: "Hogeschoollaan 32",
     city: "breda",
     isActive: true,
-    emailAddress: "d.peters@server.com",
+    emailAddress: "e.garm@server.com",
     phoneNumber: "06 29481919"
 }, ]
 
@@ -60,13 +64,24 @@ router.post('/', (req, res) => {
             isActive: true,
             emailAddress: req.body.emailAddress,
             phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
         }
-        //ASSERT
-
+        //CHECK IF USER EXISTS
+    const userExists = results.some(u => u.emailAddress === user.emailAddress);
+    if (userExists) {
+        res.status(403).json({
+            status: 403,
+            message: 'User with this email address already exists',
+            data: {},
+        });
+        return;
+    }
+    //ASSERT
     try {
-        assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'firstName must be a non-empty string');
-        assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'lastName must be a non-empty string');
-        assert(typeof user.emailAddress === 'string' && validateEmail(user.emailAddress), 'emailAddress must be a valid emailaddress');
+        assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
+        assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
+        assert(typeof user.emailAddress === 'string' && validateEmail(user.emailAddress), 'Email Address must be a valid emailaddress');
+        assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
     } catch (err) {
         //STATUS ERROR
         res.status(400).json({
@@ -77,13 +92,21 @@ router.post('/', (req, res) => {
         return;
     }
 
-
-    //INCREASE INDEX BY 1 AND PUSH TO DATABASE
-
+    //ADD EMAIL & PASSWORD COMBO TO HASHMAP
+    passwordMap[req.body.emailAddress] = req.body.password;
+    //SAVE USER IN RESULTS
     results.push(user);
+
+    //DELETE PASSWORD FROM RESULTS
+    results.map(user => {
+        if (user.password) {
+            delete user.password;
+        }
+    });
+
     //STATUS SUCCEEDED
-    res.status(200).json({
-        status: 200,
+    res.status(201).json({
+        status: 201,
         message: 'User added',
         data: user,
     })
@@ -127,12 +150,20 @@ router.delete('/:userid', function(req, res, next) {
 
 //EMAIL VALIDATION
 function validateEmail(email) {
+    //VALIDATES a.user@hotmail.com
+    //VALIDATES user@hotmail.com
     const re = /^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[A-Za-z]{2,}$/;
-    console.log(String(email));
     return re.test(String(email).toLowerCase());
 }
 
 
+function validatePassword(pass) {
+    //ATLEAST 1 NUMBER
+    //ATLEAST 1 UPPERCASE
+    //MINIMUM LENGTH 8
+    const regex = /^(?=.*\d)(?=.*[A-Z])[a-zA-Z0-9]{8,}$/;
+    return regex.test(pass);
+}
 
 
 module.exports = router;
