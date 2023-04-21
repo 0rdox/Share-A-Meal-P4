@@ -17,13 +17,11 @@ var app = express();
 //ROUTES
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var profileRouter = require('./routes/profile');
 var infoRouter = require('./routes/info');
 
 //Link .js with routes
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
-app.use('/api/profile', profileRouter);
 app.use('/api/info', infoRouter)
 
 

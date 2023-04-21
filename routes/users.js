@@ -17,7 +17,7 @@ var results = [{
     firstName: "John",
     lastName: "Evans",
     street: "Lovendijkstraat 61",
-    city: "breda",
+    city: "Breda",
     isActive: true,
     emailAddress: "j.evans@server.com",
     phoneNumber: "06 12425475"
@@ -25,9 +25,9 @@ var results = [{
     id: 2,
     firstName: "Gijs",
     lastName: "Ernst",
-    street: "sacrementsstraat 1",
+    street: "Sacrementsstraat 1",
     city: "Leeuwarden",
-    isActive: true,
+    isActive: false,
     emailAddress: "g.ernst@server.com",
     phoneNumber: "06 29481919"
 }, {
@@ -35,11 +35,37 @@ var results = [{
     firstName: "Elliot",
     lastName: "Garm",
     street: "Hogeschoollaan 32",
-    city: "breda",
+    city: "Breda",
     isActive: true,
     emailAddress: "e.garm@server.com",
-    phoneNumber: "06 29481919"
-}, ]
+    phoneNumber: "06 29291919"
+}, {
+    id: 4,
+    firstName: "Davy",
+    lastName: "Crocker",
+    street: "New York Street 12",
+    city: "Breda",
+    isActive: false,
+    emailAddress: "d.crocker@server.com",
+    phoneNumber: "06 29481123"
+}, {
+    id: 5,
+    firstName: "Willem",
+    lastName: "Poro",
+    street: "Leeuwardenstraat 19",
+    city: "Leeuwarden",
+    isActive: true,
+    emailAddress: "w.poro@server.com",
+    phoneNumber: "06 29001919"
+}]
+
+//GET PROFILE
+router.get('/profile', function(req, res, next) {
+
+    res.status(200).json({
+        data: results[0],
+    });
+});
 
 
 //GET ALL USERS
@@ -50,6 +76,8 @@ router.get('/', function(req, res, next) {
     const lastName = req.query.lastName;
     const emailAddress = req.query.emailAddress;
     const isActive = req.query.isActive;
+    const city = req.query.city;
+
 
     // FILTERS
     if (firstName) {
@@ -69,8 +97,13 @@ router.get('/', function(req, res, next) {
         filteredResults = filteredResults.filter(user => user.isActive === isActiveBoolean);
     }
 
+    if (city) {
+        filteredResults = filteredResults.filter(user => user.city.toLowerCase() === city.toLowerCase());
+    }
+
+
     //IF FILTERS DON'T MATCH, RETURN NOTHING
-    if (!firstName && !lastName && !emailAddress && !isActive && Object.keys(req.query).length !== 0) {
+    if (!firstName && !lastName && !emailAddress && !isActive && !city && Object.keys(req.query).length !== 0) {
         filteredResults = [];
     }
     // RETURN RESULTS
@@ -149,17 +182,17 @@ router.get('/:userid', function(req, res, next) {
     const userId = parseInt(req.params.userid);
     const user = results.find(user => user.id === userId);
     if (!user) {
-        next(createHttpError(404));
+        res.status(400).json({
+            status: 400,
+            message: 'user not found',
+            data: []
+        });
     } else {
-        res.json(user);
+        res.status(200).json({
+            data: user,
+        })
     }
-    // if (user = undefined) {
-    //     res.status(400).json({
-    //         status: 400,
-    //         message: 'user not found'
-    //     })
-    // }
-})
+});
 
 //UPDATE USER BY USERID
 router.put('/putting')
@@ -168,11 +201,20 @@ router.delete('/:userid', function(req, res, next) {
     const userId = parseInt(req.params.userid);
     const user = results.filter(user => user.id === userId);
     if (!user) {
-        res.status(404).send('User not found.')
+        res.status(404).json({
+            status: 404,
+            message: `User with ID ${userId} not found`,
+            data: {}
+        })
     } else {
         //CODE FOR DELETING USER 
         results = results.filter(user => user.id !== userId);
-        console.log("User deleted.");
+        res.status(200).json({
+            status: 200,
+            message: `User with ID ${userId} has been deleted`,
+            data: {}
+        });
+        return;
     }
 })
 
@@ -194,5 +236,25 @@ function validatePassword(pass) {
     return regex.test(pass);
 }
 
+// router.delete('api/user/:userId', function(req, res, next) {
+//     const id = parseInt(req.params.id);
+//     const index = results.findIndex(user => user.id === id);
+//     if (index !== -1) {
+//         results.splice(index, 1);
+//         res.status(200).json({
+//             status: 200,
+//             message: `User with ID ${id} has been deleted`,
+//             data: {}
+//         });
+//         return;
+//     } else {
+//         res.status(404).json({
+//             status: 404,
+//             message: `User with ID ${id} not found`,
+//             data: {}
+//         });
+//         return;
+//     }
+// });
 
 module.exports = router;
