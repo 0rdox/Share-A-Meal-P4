@@ -56,12 +56,6 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-//IMAGES
-app.use('/kitten', express.static('public'))
 
-app.get('/kitten', (req, res) => {
-    //maybe add . before /public
-    res.sendFile(__dirname + '/public/kitten.jpg');
-});
 
 module.exports = app;
