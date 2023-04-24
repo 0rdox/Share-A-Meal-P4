@@ -84,7 +84,7 @@ router.post('/', (req, res) => {
     if (userExists) {
         res.status(403).json({
             status: 403,
-            message: 'User with this email address already exists',
+            message: `User with Email-Address ${userExists.emailAddress} already exists`,
             data: {},
         });
         return;
@@ -120,14 +120,14 @@ router.post('/', (req, res) => {
     //STATUS SUCCEEDED
     res.status(201).json({
         status: 201,
-        message: 'User added',
+        message: `User with ID ${user.userId} added`,
         data: user,
     })
     res.end();
 })
 
 //UC-202 Opvragen overzicht van users ----------------------------------------------------------------------------
-router.get('/', function(req, res, next) {
+router.get('/', (req, res) => {
     let filteredResults = results;
 
     const firstName = req.query.firstName;
@@ -161,15 +161,28 @@ router.get('/', function(req, res, next) {
     }
     // RETURN RESULTS
     res.status(200).json({
+        status: 200,
+        message: 'List of users',
         data: filteredResults,
     });
 });
 
 
 //UC-203 Opvragen van gebruikersprofiel ----------------------------------------------------------------------------
-router.get('/profile', function(req, res, next) {
+router.get('/profile', (req, res) => {
     res.status(200).json({
-        data: results[0],
+        status: 200,
+        message: 'Your profile',
+        data: {
+            id: 1,
+            firstName: "John",
+            lastName: "Evans",
+            street: "Lovendijkstraat 61",
+            city: "Breda",
+            isActive: true,
+            emailAddress: "j.evans@server.com",
+            phoneNumber: "061-242-5475"
+        }
     });
 
     // if (!token) {
@@ -182,29 +195,31 @@ router.get('/profile', function(req, res, next) {
 });
 
 //UC-204 Opvragen van usergegevens bij ID ----------------------------------------------------------------------------
-router.get('/:userid', function(req, res, next) {
+router.get('/:userid', (req, res) => {
     const userId = parseInt(req.params.userid);
     const user = results.find(user => user.id === userId);
     if (!user) {
         res.status(404).json({
             status: 404,
-            message: 'user not found',
+            message: `User with ID ${userId} not found`,
             data: []
         });
     } else {
         res.status(200).json({
+            status: 200,
+            message: `User met ID ${userId} found`,
             data: user,
         })
     }
 });
 
-router.put('/:userid', function(req, res, next) {
+router.put('/:userid', (req, res) => {
     const userId = parseInt(req.params.userid);
     const user2 = results.find(user => user.id === userId);
     if (!user2) {
         res.status(404).json({
             status: 404,
-            message: 'user not found',
+            message: `User with ID ${userId} not found`,
             data: []
         });
     }
@@ -243,15 +258,17 @@ router.put('/:userid', function(req, res, next) {
     // });
 
     res.status(200).json({
+        status: 200,
+        message: `User met ID ${userId} has been updated`,
         data: user
     });
 });
 
 //UC-206 Verwijderen van user ----------------------------------------------------------------------------
-router.delete('/:userid', function(req, res, next) {
+router.delete('/:userid', (req, res) => {
     const userId = parseInt(req.params.userid);
     const user = results.filter(user => user.id === userId);
-    if (!user) {
+    if (user.length === 0) {
         res.status(404).json({
             status: 404,
             message: `User with ID ${userId} not found`,
@@ -274,7 +291,7 @@ function validateEmail(email) {
     //VALIDATES a.user@hotmail.com
     //VALIDATES user@hotmail.com
     const regex = /^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[A-Za-z]{2,}$/;
-    return regex.test(String(email).toLowerCase());
+    return regex.test(email);
 }
 
 
@@ -287,8 +304,8 @@ function validatePassword(pass) {
 }
 
 function validatePhoneNumber(phoneNumber) {
-    //VALIDATES 061-242-5475
-    const regex = /^0[1-9][0-9]{1,2}-[0-9]{3}-[0-9]{4}$/;
+    //VALIDATES 061-242-5475 / xxx-xxx-xxxx
+    const regex = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
     return regex.test(phoneNumber);
 }
 

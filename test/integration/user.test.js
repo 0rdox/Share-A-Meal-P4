@@ -142,7 +142,7 @@ describe('TC-20x - User', () => {
                     street: '123 Main St',
                     city: 'Anytown',
                     emailAddress: 'd.peters@avans.nl',
-                    phoneNumber: '555-1234',
+                    phoneNumber: '055-123-1234',
                     password: 'Password1234'
                 })
                 .end((err, res) => {
@@ -177,6 +177,7 @@ describe('TC-20x - User', () => {
                 .get('/api/user?fakeFilter=fake')
                 .end((err, res) => {
                     res.body.should.have.property('data').that.is.empty;
+                    res.should.have.status(200);
                     done();
                 });
 
