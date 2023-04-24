@@ -8,8 +8,8 @@ router.get('/', (req, res) => {
         status: 200,
         message: 'Server info-endpoint',
         data: {
-            studentName: 'John Gwent',
-            studentNumber: 719838,
+            studentName: 'Janko Seremak',
+            studentNumber: 2191216,
             description: 'Testing description'
         }
     });

@@ -4,13 +4,8 @@ const server = require('../../app');
 chai.should();
 chai.use(chaiHttp);
 
-//TESTEN MOETEN DIEP, ALLEEN PROPERTY TESTEN IS NIET GENOEG (HET KAN VERKEERDE DATA HEBBEN)
-
-//TESTCASE
 describe('Server-info', function() {
-    //done IS CALLBACK --> SIGNALS END OF TEST
     it('TC-102 - Server info', (done) => {
-        //GETTING SERVER
         chai.request(server)
             .get('/api/info')
             .end((err, res) => {
@@ -20,8 +15,8 @@ describe('Server-info', function() {
                 res.body.should.has.property('data');
                 let { data, message } = res.body;
                 data.should.be.an('object');
-                data.should.has.property('studentName').to.be.equal('John Gwent');
-                data.should.has.property('studentNumber').to.be.equal(719838);
+                data.should.has.property('studentName').to.be.equal('Janko Seremak');
+                data.should.has.property('studentNumber').to.be.equal(2191216);
                 done();
             });
     });

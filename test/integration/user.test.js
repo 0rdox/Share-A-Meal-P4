@@ -362,43 +362,46 @@ describe('TC-20x - User', () => {
         });
     });
 
-});
-describe('TC-206 Verwijderen van user', () => {
-    it('TC-206-1 Gebruiker bestaat niet', (done) => {
-        chai.request(server)
-            .get('/api/user/:userid')
-            .end((err, res) => {
-                done();
-            });
-    });
-    it('TC-206-2 Gebruiker is niet ingelogd', (done) => {
-        chai.request(server)
-            .get('/api/user/:userid')
-            .end((err, res) => {
-                done();
-            });
-    });
-    it('TC-206-3 De gebruiker is niet de eigenaar van de data', (done) => {
-        chai.request(server)
-            .get('/api/user/:userid')
-            .end((err, res) => {
-                done();
-            });
-    });
-    it('TC-206-4 Gebruiker succesvol verwijderd', (done) => {
-        chai.request(server)
-            .delete('/api/user/1')
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.have.property('message').to.be.equal('User with ID 1 has been deleted')
-                res.body.should.has.property('data');
-                chai.request(server)
-                    .get('/api/user/1')
-                    .end((err, res) => {
-                        res.should.have.status(400);
-                        res.body.should.has.property('data').to.be.empty;
-                        done();
-                    });
-            });
+
+    describe('TC-206 Verwijderen van user', () => {
+        it('TC-206-1 Gebruiker bestaat niet', (done) => {
+            chai.request(server)
+                .get('/api/user/:userid')
+                .end((err, res) => {
+                    done();
+                });
+        });
+        it('TC-206-2 Gebruiker is niet ingelogd', (done) => {
+            chai.request(server)
+                .get('/api/user/:userid')
+                .end((err, res) => {
+                    done();
+                });
+        });
+        it('TC-206-3 De gebruiker is niet de eigenaar van de data', (done) => {
+            chai.request(server)
+                .get('/api/user/:userid')
+                .end((err, res) => {
+                    done();
+                });
+        });
+        it('TC-206-4 Gebruiker succesvol verwijderd', (done) => {
+            chai.request(server)
+                .delete('/api/user/1')
+                .end((err, res) => {
+                    //Deletes user
+                    res.should.have.status(200);
+                    res.body.should.have.property('message').to.be.equal('User with ID 1 has been deleted')
+                    res.body.should.has.property('data');
+                    //Checks if user has been deleted
+                    chai.request(server)
+                        .get('/api/user/1')
+                        .end((err, res) => {
+                            res.should.have.status(404);
+                            res.body.should.has.property('data').to.be.empty;
+                            done();
+                        });
+                });
+        });
     });
 });
