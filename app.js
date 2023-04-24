@@ -1,9 +1,3 @@
-//LOG app starting
-console.log("Starting server...")
-
-//CHECK HTTP STATUS CODES
-
-//What does this do
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -16,16 +10,18 @@ var app = express();
 
 //ROUTES
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/user');
 var infoRouter = require('./routes/info');
+var mealRouter = require('./routes/meal')
 
 //Link .js with routes
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
-app.use('/api/info', infoRouter)
+app.use('/api/info', infoRouter);
+app.use('/api/meal', mealRouter);
 
 
-//What does this do // maybe delete
+//Console.logs methods when called
 app.use('*', (req, res, next) => {
     const method = req.method;
     console.log('Method ' + $(method) + 'is called');
@@ -67,8 +63,5 @@ app.get('/kitten', (req, res) => {
     //maybe add . before /public
     res.sendFile(__dirname + '/public/kitten.jpg');
 });
-
-//LOG App Started
-console.log("Server Started.")
 
 module.exports = app;

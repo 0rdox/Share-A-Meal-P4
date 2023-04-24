@@ -1,9 +1,12 @@
 body {
-    padding: 50px;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
     text-align: center;
-    vertical-align: middle;
     background-color: antiquewhite;
+}
+
+p {
+    font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+    text-align: center;
 }
 
 a {

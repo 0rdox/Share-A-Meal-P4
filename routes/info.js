@@ -1,18 +1,8 @@
 var express = require('express');
 var router = express.Router();
+const infoController = require('../controllers/info.controller')
 
-
-router.get('/', (req, res) => {
-    //STATUSCODE
-    res.status(200).json({
-        status: 200,
-        message: 'Server info-endpoint',
-        data: {
-            studentName: 'Janko Seremak',
-            studentNumber: 2191216,
-            description: 'Testing description'
-        }
-    });
-});
+//Get INFO
+router.get('/', infoController.getInfo);
 
 module.exports = router;

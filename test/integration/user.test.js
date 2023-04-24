@@ -1,8 +1,8 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../../app');
-chai.should();
 chai.use(chaiHttp);
+const should = chai.should();
 
 
 
@@ -150,11 +150,10 @@ describe('TC-20x - User', () => {
                     res.body.should.has.property('status', 201);
                     res.body.should.has.property('message');
                     res.body.should.has.property('data').to.not.be.empty;
-
-                    let { firstName, lastName, emailAddress } = res.body.data;
-                    firstName.should.be.a('string').to.be.equal('Derek');
-                    lastName.should.be.a('string').to.be.equal('Peters');
-                    emailAddress.should.be.a('string').to.be.equal('d.peters@avans.nl');
+                    let { user } = res.body.data;
+                    user.firstName.should.be.a('string').to.be.equal('Derek');
+                    user.lastName.should.be.a('string').to.be.equal('Peters');
+                    user.emailAddress.should.be.a('string').to.be.equal('d.peters@avans.nl');
                     done();
                 });
         });
