@@ -19,7 +19,7 @@ jobs:
           node-version: 16
 
       # Install dependencies
-      - run: npm install
+      - run: npm install -g mocha
 
       # Run tests
       - run: npm test
