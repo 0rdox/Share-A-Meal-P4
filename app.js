@@ -12,13 +12,15 @@ var app = express();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var infoRouter = require('./routes/info');
-var mealRouter = require('./routes/meal')
+var mealRouter = require('./routes/meal');
+var loginRouter = require('./routes/login');
 
 //Link .js with routes
 app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
 app.use('/api/info', infoRouter);
 app.use('/api/meal', mealRouter);
+app.use('/api/auth', loginRouter);
 
 
 //Console.logs methods when called
@@ -26,6 +28,16 @@ app.use('*', (req, res, next) => {
     const method = req.method;
     console.log('Method ' + $(method) + 'is called');
     next();
+})
+
+//GENERIC ERROR HANDLER
+app.use((err, req, res, next) => {
+    console.log(err.stack);
+    res.status(err.code).json({
+        statusCode: err.code,
+        message: err.message,
+        data: {}
+    })
 })
 
 //What does this do // keep

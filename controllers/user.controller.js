@@ -1,52 +1,86 @@
 const assert = require('assert');
-const results = require('../utils/database');
+//const results = require('../utils/inmem-db');
+const pool = require('../utils/mysql-db');
+
+//TODO:
+//getAllUsers - done
+//createUser - done
+//getProfile - 
+//getUserId - done
+//updateUserId - 
+//deleteUserId - done
+
+
 
 const userController = {
-    getAllUsers: (req, res) => {
-        let filteredResults = results.users;
-
+    getAllUsers: (req, res, next) => {
         const firstName = req.query.firstName;
         const lastName = req.query.lastName;
         const emailAddress = req.query.emailAddress;
         const isActive = req.query.isActive;
         const city = req.query.city;
+        const street = req.query.street;
 
 
-        // FILTERS
-        if (firstName) {
-            filteredResults = filteredResults.filter(user => user.firstName.toLowerCase() === firstName.toLowerCase());
-        }
-        if (lastName) {
-            filteredResults = filteredResults.filter(user => user.lastName.toLowerCase() === lastName.toLowerCase());
-        }
-        if (emailAddress) {
-            filteredResults = filteredResults.filter(user => user.emailAddress.toLowerCase() === emailAddress.toLowerCase());
-        }
-        if (isActive !== undefined) {
-            const isActiveBoolean = isActive === "true";
-            filteredResults = filteredResults.filter(user => user.isActive === isActiveBoolean);
-        }
-        if (city) {
-            filteredResults = filteredResults.filter(user => user.city.toLowerCase() === city.toLowerCase());
+        console.log(req.query)
+
+        //FILTERS
+
+        let sql = 'SELECT * FROM `user` WHERE 1=1 ';
+        if (Object.keys(req.query).length > 0) {
+            if (firstName) {
+                sql += `AND \`firstName\` = '${firstName}' `;
+            }
+            if (lastName) {
+                sql += `AND \`lastName\` = '${lastName}' `;
+            }
+            if (emailAddress) {
+                sql += `AND \`emailAddress\` = '${emailAddress}' `;
+            }
+            if (isActive !== undefined) {
+                sql += `AND \`isActive\` = ${isActive} `;
+            }
+            if (street) {
+                sql += `AND \`street\` = '${street}' `;
+            }
+            if (city) {
+                sql += `AND \`city\` = '${city}' `;
+            }
+            //IF FILTERS DONT MATCH
+            if (!firstName && !lastName && !emailAddress && isActive === undefined && !city && !street) {
+                sql += 'AND 1=0 ';
+            }
         }
 
-        //IF FILTERS DON'T MATCH, RETURN NOTHING
-        if (!firstName && !lastName && !emailAddress && !isActive && !city && Object.keys(req.query).length !== 0) {
-            filteredResults = [];
-        }
-        // RETURN RESULTS
-        res.status(200).json({
-            status: 200,
-            message: 'List of users',
-            data: filteredResults,
+        //SQL CONNECTION
+        pool.getConnection(function(err, conn) {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+            }
+            if (conn) {
+                conn.query(sql, function(err, results, fields) {
+                    if (err) {
+                        next({
+                            code: 409,
+                            message: err.message
+                        });
+                    }
+                    if (results) {
+                        res.status(200).json({
+                            statusCode: 200,
+                            message: 'User GetAll endpoint',
+                            data: results,
+                        })
+                    }
+                    conn.release();
+                });
+            }
         });
-
     },
-    createUser: (req, res) => {
-        let index = results.users.length;
-
+    createUser: (req, res, next) => {
         const user = {
-            id: index + 1,
+            id: req.body.id,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             street: req.body.street,
@@ -57,55 +91,71 @@ const userController = {
             password: req.body.password,
         }
 
-        //CHECK IF USER EXISTS
-        const userExists = results.users.some(u => u.emailAddress === user.emailAddress);
-        if (userExists) {
-            res.status(403).json({
-                status: 403,
-                message: `User with Email-Address ${user.emailAddress} already exists`,
-                data: {},
-            });
-            return;
-        }
+        // CHECK IF USER EXISTS IN DATABASE
+        const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAddress\` = '${user.emailAddress}'`;
+        pool.getConnection(function(err, conn) {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+            }
+            if (conn) {
+                conn.query(checkUserSql, function(err, results, fields) {
+                    if (err) {
+                        next({
+                            code: 409,
+                            message: err.message
+                        });
+                    }
+                    if (results.length > 0) {
+                        res.status(403).json({
+                            status: 403,
+                            message: `User with Email-Address ${user.emailAddress} already exists`,
+                            data: {},
+                        });
+                        conn.release();
+                        return;
+                    }
 
-        //ASSERT
-        try {
-            assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
-            assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
-            assert(typeof user.emailAddress === 'string' && validateEmail(user.emailAddress), 'Email Address must be a valid emailaddress');
-            assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
-            assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
-        } catch (err) {
-            //STATUS ERROR
-            res.status(400).json({
-                status: 400,
-                message: err.message.toString(),
-                data: {},
-            });
-            return;
-        }
+                    //ASSERT
+                    try {
+                        assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
+                        assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
+                        assert(typeof user.emailAddress === 'string' && validateEmail(user.emailAddress), 'Email Address must be a valid email address');
+                        assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
+                        assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
+                    } catch (err) {
+                        //STATUS ERROR
+                        res.status(400).json({
+                            status: 400,
+                            message: err.message.toString(),
+                            data: {},
+                        });
+                        conn.release();
+                        return;
+                    }
 
-        //     //ADD EMAIL & PASSWORD COMBO TO HASHMAP
-        //     passwordMap[req.body.emailAddress] = req.body.password;
-        //     //SAVE USER IN RESULTS
-        //     results.users.push(user);
-        //     //DELETE PASSWORD FROM RESULTS
-        //     results.users.map(user => {
-        //         if (user.password) {
-        //             delete user.password;
-        //         }
-        //     });
+                    //INSERT USER INTO DATABASE
+                    const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAddress\`, \`phoneNumber\`, \`password\`) 
+                        VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAddress}', '${user.phoneNumber}', '${user.password}')`;
 
-        //ADD USER TO USERS DATABASE
-        results.users.push(user);
-
-
-
-        //SUCCESS
-        res.status(201).json({
-            status: 201,
-            message: `User with Email-Address ${user.emailAddress} has been created`,
-            data: { user },
+                    conn.query(createUserSql, function(err, results, fields) {
+                        if (err) {
+                            next({
+                                code: 409,
+                                message: err.message,
+                            });
+                        }
+                        if (results) {
+                            res.status(201).json({
+                                status: 201,
+                                message: `User with Email-Address ${user.emailAddress} has been created`,
+                                data: { user },
+                            });
+                        }
+                        conn.release();
+                    });
+                });
+            }
         });
     },
     getProfile: (req, res) => {
@@ -132,22 +182,49 @@ const userController = {
         //     })
         // }
     },
-    getUserId: (req, res) => {
+    getUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
-        const user = results.users.find(user => user.id === userId);
-        if (!user) {
-            res.status(404).json({
-                status: 404,
-                message: `User with ID ${userId} not found`,
-                data: []
-            });
-        } else {
-            res.status(200).json({
-                status: 200,
-                message: `User met ID ${userId} found`,
-                data: user,
-            });
-        }
+        pool.getConnection(function(err, conn) {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+            }
+
+
+            if (conn) {
+                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
+                    if (err) {
+                        next({
+                            code: 404,
+                            message: err.message
+                        });
+                    }
+
+                    //
+                    if (results.length == 1) {
+                        res.status(200).json({
+                            status: 200,
+                            message: `User with ID ${userId} found`,
+                            data: results[0],
+                        })
+                    } else {
+                        res.status(404).json({
+                            status: 404,
+                            message: `User with ID ${userId} not found`,
+                            data: {}
+                        })
+                    }
+                    // if (results) {
+                    //     res.status(200).json({
+                    //         status: 200,
+                    //         message: `User met ID ${userId} found`,
+                    //         data: results[0],
+                    //     })
+                    //        }
+                    conn.release();
+                });
+            }
+        });
     },
     updateUserId: (req, res) => {
         const userId = parseInt(req.params.userid);
@@ -199,25 +276,48 @@ const userController = {
             data: user
         });
     },
-    deleteUserId: (req, res) => {
+    deleteUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
-        const user = results.users.filter(user => user.id === userId);
-        if (user.length === 0) {
-            res.status(404).json({
-                status: 404,
-                message: `User with ID ${userId} not found`,
-                data: {}
-            })
-        } else {
-            results.users = results.users.filter(user => user.id !== userId);
-            res.status(200).json({
-                status: 200,
-                message: `User with ID ${userId} has been deleted`,
-                data: {}
+
+        //SQL Query
+        const sql = `DELETE FROM \`user\` WHERE \`id\` = ${userId}`;
+
+        // Use pool connection to execute SQL query
+        pool.getConnection((err, conn) => {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+                return;
+            }
+
+            conn.query(sql, (err, result) => {
+                if (err) {
+                    console.log('error', err);
+                    next({
+                        code: 409,
+                        message: err.message
+                    });
+                    return;
+                }
+
+                if (result.affectedRows === 0) {
+                    res.status(404).json({
+                        statusCode: 404,
+                        message: `User with ID ${userId} not found`,
+                        data: {},
+                    });
+                } else {
+                    res.status(200).json({
+                        statusCode: 200,
+                        message: `User with ID ${userId} has been deleted`,
+                        data: {},
+                    });
+                }
+
+                conn.release();
             });
-            return;
-        }
-    }
+        });
+    },
 };
 
 
@@ -248,7 +348,7 @@ function validatePassword(pass) {
 
 function validatePhoneNumber(phoneNumber) {
     //VALIDATES 061-242-5475 / xxx-xxx-xxxx
-    const regex = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
+    const regex = /^\d{2}\s\d{8}$/;
     return regex.test(phoneNumber);
 }
 

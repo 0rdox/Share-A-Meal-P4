@@ -21,15 +21,14 @@ router.get('/', userController.getAllUsers);
 //UC-203 Opvragen van gebruikersprofiel 
 router.get('/profile', userController.getProfile);
 
-
 //UC-204 Opvragen van usergegevens bij ID 
 router.get('/:userid', userController.getUserId);
 
 //UC-205 Updaten van usergegevens
-router.put('/:userid', userController.updateUserId)
+router.put('/:userid', userController.updateUserId);
 
 //UC-206 Verwijderen van user 
-router.delete('/:userid', userController.deleteUserId)
+router.delete('/:userid', userController.deleteUserId);
 
 
-module.exports = router;
+module.exports = router
