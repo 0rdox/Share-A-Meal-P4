@@ -8,6 +8,9 @@ on:
 jobs:
   integrationtests:
     runs-on: ubuntu-latest
+       env:
+      DB_HOST: localhost
+      DB_USER: root
     steps:
       # Checkout the Repo
       - uses: actions/checkout@v2

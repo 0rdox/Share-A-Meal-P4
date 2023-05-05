@@ -18,7 +18,7 @@ pool.getConnection(function(err, conn) {
     // Do something with the connection
 
     if (err) {
-        console.log("Error");
+        console.log("Error, can't connect to SQL");
     }
     if (conn) {
 
