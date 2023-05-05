@@ -18,12 +18,15 @@ const pool = mysql.createPool({
 pool.getConnection(function(err, conn) {
     // Do something with the connection
 
+
     if (err) {
         console.log("Error, can't connect to SQL");
     }
     if (conn) {
-
-        // simple query
+        conn.query(
+                'GRANT ALL PRIVILEGES ON shareameal.* TO root@localhost'
+            )
+            // simple query
         conn.query(
             'SELECT `id`, `name` FROM `meal`',
             function(err, results, fields) {
