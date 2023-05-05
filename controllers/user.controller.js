@@ -16,7 +16,7 @@ const userController = {
     getAllUsers: (req, res, next) => {
         const firstName = req.query.firstName;
         const lastName = req.query.lastName;
-        const emailAddress = req.query.emailAddress;
+        const emailAdress = req.query.emailAdress;
         const isActive = req.query.isActive;
         const city = req.query.city;
         const street = req.query.street;
@@ -34,8 +34,8 @@ const userController = {
             if (lastName) {
                 sql += `AND \`lastName\` = '${lastName}' `;
             }
-            if (emailAddress) {
-                sql += `AND \`emailAddress\` = '${emailAddress}' `;
+            if (emailAdress) {
+                sql += `AND \`emailAdress\` = '${emailAdress}' `;
             }
             if (isActive !== undefined) {
                 sql += `AND \`isActive\` = ${isActive} `;
@@ -47,7 +47,7 @@ const userController = {
                 sql += `AND \`city\` = '${city}' `;
             }
             //IF FILTERS DONT MATCH
-            if (!firstName && !lastName && !emailAddress && isActive === undefined && !city && !street) {
+            if (!firstName && !lastName && !emailAdress && isActive === undefined && !city && !street) {
                 sql += 'AND 1=0 ';
             }
         }
@@ -86,13 +86,13 @@ const userController = {
             street: req.body.street,
             city: req.body.city,
             isActive: req.body.isActive === undefined ? true : req.body.isActive,
-            emailAddress: req.body.emailAddress,
+            emailAdress: req.body.emailAdress,
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,
         }
 
         // CHECK IF USER EXISTS IN DATABASE
-        const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAddress\` = '${user.emailAddress}'`;
+        const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAdress\` = '${user.emailAdress}'`;
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
@@ -109,7 +109,7 @@ const userController = {
                     if (results.length > 0) {
                         res.status(403).json({
                             status: 403,
-                            message: `User with Email-Address ${user.emailAddress} already exists`,
+                            message: `User with Email-Address ${user.emailAdress} already exists`,
                             data: {},
                         });
                         conn.release();
@@ -120,7 +120,7 @@ const userController = {
                     try {
                         assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
                         assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
-                        assert(typeof user.emailAddress === 'string' && validateEmail(user.emailAddress), 'Email Address must be a valid email address');
+                        assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
                         assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
                         assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
                     } catch (err) {
@@ -135,8 +135,8 @@ const userController = {
                     }
 
                     //INSERT USER INTO DATABASE
-                    const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAddress\`, \`phoneNumber\`, \`password\`) 
-                        VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAddress}', '${user.phoneNumber}', '${user.password}')`;
+                    const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAdress\`, \`phoneNumber\`, \`password\`) 
+                        VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAdress}', '${user.phoneNumber}', '${user.password}')`;
 
                     conn.query(createUserSql, function(err, results, fields) {
                         if (err) {
@@ -148,7 +148,7 @@ const userController = {
                         if (results) {
                             res.status(201).json({
                                 status: 201,
-                                message: `User with Email-Address ${user.emailAddress} has been created`,
+                                message: `User with Email-Address ${user.emailAdress} has been created`,
                                 data: { user },
                             });
                         }
@@ -169,7 +169,7 @@ const userController = {
                 street: "Lovendijkstraat 61",
                 city: "Breda",
                 isActive: true,
-                emailAddress: "j.evans@server.com",
+                emailAdress: "j.evans@server.com",
                 phoneNumber: "061-242-5475"
             }
         });
@@ -244,7 +244,7 @@ const userController = {
         try {
             assert(typeof req.body.firstName === 'undefined' || (typeof req.body.firstName === 'string' && req.body.firstName.trim() !== ''), 'First name must be a non-empty string');
             assert(typeof req.body.lastName === 'undefined' || (typeof req.body.lastName === 'string' && req.body.lastName.trim() !== ''), 'Last name must be a non-empty string');
-            assert(typeof req.body.emailAddress === 'undefined' || (typeof req.body.emailAddress === 'string' && validateEmail(req.body.emailAddress)), 'Email Address must be a valid email address');
+            assert(typeof req.body.emailAdress === 'undefined' || (typeof req.body.emailAdress === 'string' && validateEmail(req.body.emailAdress)), 'Email Address must be a valid email address');
             assert(typeof req.body.phoneNumber === 'undefined' || (typeof req.body.phoneNumber === 'string' && validatePhoneNumber(req.body.phoneNumber)), 'Phone number must be a valid phone number');
         } catch (err) {
             res.status(400).json({
@@ -260,7 +260,7 @@ const userController = {
         user.street = req.body.street || user.street;
         user.city = req.body.city || user.city;
         user.isActive = req.body.isActive === undefined ? user.isActive : req.body.isActive;
-        user.emailAddress = req.body.emailAddress || user.emailAddress;
+        user.emailAdress = req.body.emailAdress || user.emailAdress;
         user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
 
         // //DELETE PASSWORD FROM RESULTS

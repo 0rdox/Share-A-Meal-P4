@@ -35,7 +35,7 @@ describe('TC-20x - User', () => {
                 .send({
                     firstName: 'Jacob',
                     lastName: 'DeWitt',
-                    emailAddress: '@hotmail.com'
+                    emailAdress: '@hotmail.com'
                 })
                 .end((err, res) => {
                     res.body.should.be.an('object');
@@ -51,7 +51,7 @@ describe('TC-20x - User', () => {
                 .send({
                     firstName: 'Jacob',
                     lastName: 'DeWitt',
-                    emailAddress: ''
+                    emailAdress: ''
                 })
                 .end((err, res) => {
                     res.body.should.be.an('object');
@@ -67,7 +67,7 @@ describe('TC-20x - User', () => {
                 .send({
                     firstName: 'Jacob',
                     lastName: 'DeWitt',
-                    emailAddress: 'john@.com'
+                    emailAdress: 'john@.com'
                 })
                 .end((err, res) => {
                     res.body.should.be.an('object');
@@ -85,7 +85,7 @@ describe('TC-20x - User', () => {
                 .send({
                     firstName: 'Jacob',
                     lastName: 'DeWitt',
-                    emailAddress: 'j.dewitt@hotmail.com',
+                    emailAdress: 'j.dewitt@hotmail.com',
                     password: '123123123'
                 })
                 .end((err, res) => {
@@ -103,7 +103,7 @@ describe('TC-20x - User', () => {
                 .send({
                     firstName: 'Jacob',
                     lastName: 'DeWitt',
-                    emailAddress: 'j.dewitt@hotmail.com',
+                    emailAdress: 'j.dewitt@hotmail.com',
                     password: 'Pass123'
                 })
                 .end((err, res) => {
@@ -122,7 +122,7 @@ describe('TC-20x - User', () => {
                 .send({
                     firstName: 'Mariëtte',
                     lastName: 'van den Dullemen',
-                    emailAddress: 'm.vandullemen@server.nl',
+                    emailAdress: 'm.vandullemen@server.nl',
                     phoneNumber: '06 12345678',
                     password: 'Pass1231Pa'
                 })
@@ -144,7 +144,7 @@ describe('TC-20x - User', () => {
                     lastName: 'Peters',
                     street: '123 Main St',
                     city: 'Anytown',
-                    emailAddress: 'm.peters@avans.nl',
+                    emailAdress: 'm.peters@avans.nl',
                     phoneNumber: '05 51231234',
                     password: 'Password1234'
                 })
@@ -156,7 +156,7 @@ describe('TC-20x - User', () => {
                     let { user } = res.body.data;
                     user.firstName.should.be.a('string').to.be.equal('Mike');
                     user.lastName.should.be.a('string').to.be.equal('Peters');
-                    user.emailAddress.should.be.a('string').to.be.equal('m.peters@avans.nl');
+                    user.emailAdress.should.be.a('string').to.be.equal('m.peters@avans.nl');
                     done();
                 });
         });
@@ -226,8 +226,8 @@ describe('TC-20x - User', () => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
                     const filteredUser = res.body.data[0];
-                    filteredUser.firstName.should.equal('John');
-                    filteredUser.lastName.should.equal('Edwards');
+                    filteredUser.firstName.should.equal('Roko');
+                    filteredUser.lastName.should.equal('Roko');
                     filteredUser.isActive.should.equal(1);
                     filteredUser.street.should.equal('Street');
 
