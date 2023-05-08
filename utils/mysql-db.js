@@ -4,9 +4,9 @@ require('dotenv').config();
 
 // create the connection to database
 const pool = mysql.createPool({
-    host: % ,
+    host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    user: user1,
+    user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     waitForConnections: true,

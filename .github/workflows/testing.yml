@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DB_HOST: localhost
-      DB_USER: root
+      DB_USER: user1
+      DB_PASSWORD: mealpass
     steps:
       # Checkout the Repo
       - uses: actions/checkout@v2
