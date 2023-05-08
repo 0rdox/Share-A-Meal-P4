@@ -11,7 +11,7 @@ jobs:
     env:
       DB_HOST: localhost
       DB_USER: user1
-      DB_PASSWORD: mealpass
+      DB_PASSWORD: YES
     steps:
       # Checkout the Repo
       - uses: actions/checkout@v2
