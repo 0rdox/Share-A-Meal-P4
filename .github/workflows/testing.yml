@@ -11,7 +11,6 @@ jobs:
     env:
       DB_HOST: localhost
       DB_USER: root
-      DB_PASSWORD: password
     steps:
       # Checkout the Repo
       - uses: actions/checkout@v2

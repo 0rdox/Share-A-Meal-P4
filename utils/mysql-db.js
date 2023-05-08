@@ -1,12 +1,14 @@
 // get the client
 const mysql = require('mysql2');
+require('dotenv').config();
 
 // create the connection to database
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'shareameal',
+    host: % ,
+    port: process.env.DB_PORT,
+    user: user1,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
     waitForConnections: true,
     connectionLimit: 10,
     maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
@@ -16,24 +18,16 @@ const pool = mysql.createPool({
 
 // For pool initialization, see above
 pool.getConnection(function(err, conn) {
-    // Do something with the connection
 
+    conn.query(
+        'SELECT `id` FROM `user`',
+    )
 
     if (err) {
         console.log("Error, can't connect to SQL");
     }
     if (conn) {
-        conn.query(
-                'GRANT ALL PRIVILEGES ON shareameal.* TO root@localhost'
-            )
-            // simple query
-        conn.query(
-            'SELECT `id`, `name` FROM `meal`',
-            function(err, results, fields) {
-                //   console.log('errors: ', err)
-                //   console.log('results: ', results); // results contains rows returned by server
-            }
-        );
+
         pool.releaseConnection(conn);
     }
 });
