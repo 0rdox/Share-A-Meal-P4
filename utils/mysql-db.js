@@ -1,14 +1,17 @@
 // get the client
 const mysql = require('mysql2');
-require('dotenv').config();
 
 // create the connection to database
+
+
+// Create the connection pool. The pool-specific settings are the defaults
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    database: process.env.DB_DATABASE || 'shareameal',
+    port: process.env.DB_PORT || 3306,
+    password: process.env.DB_PASSWORD || '',
+    multipleStatements: true,
     waitForConnections: true,
     connectionLimit: 10,
     maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
@@ -16,21 +19,16 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// For pool initialization, see above
-pool.getConnection(function(err, conn) {
-
-    conn.query(
-        'SELECT `id` FROM `user`',
-    )
-
-    if (err) {
-        console.log("Error, can't connect to SQL");
-    }
-    if (conn) {
-
-        pool.releaseConnection(conn);
-    }
+pool.on('connection', function(connection) {
+    //   console.log("connect")
 });
 
+pool.on('acquire', function(connection) {
+    //   console.log("acquire")
+});
+
+pool.on('release', function(connection) {
+    //   console.log("release")
+});
 
 module.exports = pool;

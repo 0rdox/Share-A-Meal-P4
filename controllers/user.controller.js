@@ -5,7 +5,7 @@ const pool = require('../utils/mysql-db');
 //TODO:
 //getAllUsers - done
 //createUser - done
-//getProfile - 
+//getProfile - done?
 //getUserId - done
 //updateUserId - 
 //deleteUserId - done
@@ -22,7 +22,6 @@ const userController = {
         const street = req.query.street;
 
 
-        console.log(req.query)
 
         //FILTERS
 
@@ -91,6 +90,7 @@ const userController = {
             password: req.body.password,
         }
 
+
         // CHECK IF USER EXISTS IN DATABASE
         const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAdress\` = '${user.emailAdress}'`;
         pool.getConnection(function(err, conn) {
@@ -116,7 +116,7 @@ const userController = {
                         return;
                     }
 
-                    //ASSERT
+                    //ASSERT -- maybe place before connection
                     try {
                         assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
                         assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
@@ -163,14 +163,14 @@ const userController = {
             status: 200,
             message: 'Your profile',
             data: {
-                id: 1,
+                id: 20,
                 firstName: "John",
                 lastName: "Evans",
                 street: "Lovendijkstraat 61",
                 city: "Breda",
                 isActive: true,
                 emailAdress: "j.evans@server.com",
-                phoneNumber: "061-242-5475"
+                phoneNumber: "06 12426475"
             }
         });
 
@@ -226,54 +226,68 @@ const userController = {
             }
         });
     },
-    updateUserId: (req, res) => {
+    updateUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
-        const user2 = results.users.find(user => user.id === userId);
-        if (!user2) {
-            res.status(404).json({
-                status: 404,
-                message: `User with ID ${userId} not found`,
-                data: []
-            });
-        }
 
-        //GET USER
-        const user = results.users[userId - 1];
+        pool.getConnection(function(err, conn) {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+            }
 
-        //ASSERTIONS
-        try {
-            assert(typeof req.body.firstName === 'undefined' || (typeof req.body.firstName === 'string' && req.body.firstName.trim() !== ''), 'First name must be a non-empty string');
-            assert(typeof req.body.lastName === 'undefined' || (typeof req.body.lastName === 'string' && req.body.lastName.trim() !== ''), 'Last name must be a non-empty string');
-            assert(typeof req.body.emailAdress === 'undefined' || (typeof req.body.emailAdress === 'string' && validateEmail(req.body.emailAdress)), 'Email Address must be a valid email address');
-            assert(typeof req.body.phoneNumber === 'undefined' || (typeof req.body.phoneNumber === 'string' && validatePhoneNumber(req.body.phoneNumber)), 'Phone number must be a valid phone number');
-        } catch (err) {
-            res.status(400).json({
-                status: 400,
-                message: err.message.toString(),
-                data: {},
-            });
-            return;
-        }
-        //UPDATE USER
-        user.firstName = req.body.firstName || user.firstName;
-        user.lastName = req.body.lastName || user.lastName;
-        user.street = req.body.street || user.street;
-        user.city = req.body.city || user.city;
-        user.isActive = req.body.isActive === undefined ? user.isActive : req.body.isActive;
-        user.emailAdress = req.body.emailAdress || user.emailAdress;
-        user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+            //ASSERT
 
-        // //DELETE PASSWORD FROM RESULTS
-        // results.map(user => {
-        //     if (user.password) {
-        //         delete user.password;
-        //     }
-        // });
 
-        res.status(200).json({
-            status: 200,
-            message: `User met ID ${userId} has been updated`,
-            data: user
+            //SEARCH USER
+            if (conn) {
+                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
+                    if (err) {
+                        next({
+                            code: 404,
+                            message: err.message
+                        });
+                    }
+
+
+                    //UPDATE USER
+                    if (results.length === 1) {
+                        const user = results[0];
+                        user.firstName = req.body.firstName || user.firstName;
+                        user.lastName = req.body.lastName || user.lastName;
+                        user.street = req.body.street || user.street;
+                        user.city = req.body.city || user.city;
+                        user.isActive = req.body.isActive || user.isActive;
+                        user.emailAdress = req.body.emailAdress || user.emailAdress;
+                        user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+
+
+
+                        //SAVE UPDATED USER
+                        conn.query(`UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`, function(err, results, fields) {
+                            if (err) {
+                                next({
+                                    code: 500,
+                                    message: err.message
+                                });
+                            }
+
+                            res.status(200).json({
+                                status: 200,
+                                message: `User with ID ${userId} has been updated`,
+                                data: user
+                            });
+                        });
+                    } else {
+                        res.status(404).json({
+                            status: 404,
+                            message: `User with ID ${userId} not found`,
+                            data: {}
+                        });
+                    }
+
+                    conn.release();
+                });
+            }
         });
     },
     deleteUserId: (req, res, next) => {
