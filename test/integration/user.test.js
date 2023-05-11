@@ -135,6 +135,7 @@ describe('TC-20x - User', () => {
                 });
         });
         it('TC-201-5 Gebruiker succesvol geregistreerd', (done) => {
+            let createdUserId;
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -203,7 +204,6 @@ describe('TC-20x - User', () => {
                     // filteredUser.firstName.should.equal('Gijs');
                     // filteredUser.lastName.should.equal('Ernst');
                     done();
-
                 });
         });
         it('TC-202-4 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=true', (done) => {
