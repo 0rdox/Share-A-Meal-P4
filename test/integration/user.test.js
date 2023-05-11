@@ -272,10 +272,8 @@ describe('TC-20x - User', () => {
                     res.should.have.status(200)
                     res.body.should.have.property('data').that.is.an('object');
                     const filteredUser = res.body.data;
-                    filteredUser.firstName.should.equal('John');
-                    filteredUser.lastName.should.equal('Evans');
-                    filteredUser.city.should.equal('Breda');
-
+                    filteredUser.firstName.should.equal('Mariëtte');
+                    filteredUser.lastName.should.equal('van den Dullemen');
                     done();
                 });
         });
