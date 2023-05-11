@@ -5,7 +5,17 @@ chai.use(chaiHttp);
 const should = chai.should();
 
 
+//TODO:
+//(T) = Token
+//TC-201 - Done
+//TC-202 - Done
+//TC-203 - 203-1 (T)
+//TC-204 - 204-1 (T)
+//TC-205 - 205-2 (T) - 205-5 (T)
+//TC-206 - 206-2 (T) - 206-3 (T)
 
+//USE ClearDB's + Insert Data functions --> BeforeEach
+//rebuild database
 
 
 //USER TESTCASES
@@ -28,7 +38,6 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-
         it('TC-201-2-1 Niet-valide emailadres', (done) => {
             chai.request(server)
                 .post('/api/user')
@@ -77,8 +86,6 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-
-
         it('TC-201-3-1 Niet-valide wachtwoorden', (done) => {
             chai.request(server)
                 .post('/api/user')
@@ -96,7 +103,6 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-
         it('TC-201-3-2 Niet-valide wachtwoorden', (done) => {
             chai.request(server)
                 .post('/api/user')
@@ -114,8 +120,6 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-
-
         it('TC-201-4 Gebruiker bestaat al', (done) => {
             chai.request(server)
                 .post('/api/user')
@@ -173,7 +177,6 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-
         it('TC-202-2-1 Toon gebruikers met zoekterm op niet-bestaande velden', (done) => {
             chai.request(server)
                 .get('/api/user?fakeFilter=fake')
@@ -193,7 +196,6 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-
         it.skip('TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false', (done) => {
             chai.request(server)
                 .get('/api/user?isActive=false')
@@ -254,9 +256,9 @@ describe('TC-20x - User', () => {
                 });
 
         });
-
-
     });
+
+    //TESTCASE 203 -------------------------------------------------------------------------------------------------
     describe('TC-203 Opvragen van gebruikersprofiel', () => {
         it('TC-203-1 Ongeldig token', (done) => {
             chai.request(server)
@@ -278,6 +280,8 @@ describe('TC-20x - User', () => {
                 });
         });
     });
+
+    //TESTCASE 204 -------------------------------------------------------------------------------------------------
     describe('TC-204 Opvragen van usergegevens bij ID', () => {
         it('TC-204-1 Ongeldig token', (done) => {
             chai.request(server)
@@ -288,8 +292,12 @@ describe('TC-20x - User', () => {
         });
         it('TC-204-2 Gebruiker-ID bestaat niet', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .get('/api/user/99292818128')
                 .end((err, res) => {
+                    res.body.should.have.status(404)
+                    res.body.should.has.property('status').that.equals(404)
+                    res.body.should.has.property('data').to.be.empty;
+                    res.body.should.has.property('message').that.equals('User with ID 99292818128 not found')
                     done();
                 });
         });
@@ -301,7 +309,6 @@ describe('TC-20x - User', () => {
                     res.body.should.have.property('data').that.is.an('object');
                     const filteredUser = res.body.data;
                     filteredUser.firstName.should.equal('Mariëtte');
-
                     done();
                 });
         });
@@ -318,11 +325,25 @@ describe('TC-20x - User', () => {
                 });
         });
     });
+
+    //TESTCASE 205 -------------------------------------------------------------------------------------------------
     describe('TC-205 Updaten van usergegevens', () => {
         it('TC-205-1 Verplicht veld "emailAddress" ontbreekt', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .put('/api/user/x')
+                .send({
+                    firstName: 'Jacob',
+                    lastName: 'Edwards',
+                    isActive: 1,
+                    password: "Password1234",
+                    phoneNumber: "05 90411019",
+                    street: "Street",
+                    city: "Anytown"
+                })
                 .end((err, res) => {
+                    res.body.should.have.status(400)
+                    res.body.should.has.property('message')
+                    res.body.should.has.property('data').to.be.empty;
                     done();
                 });
         });
@@ -335,15 +356,27 @@ describe('TC-20x - User', () => {
         });
         it('TC-205-3 Niet-valide telefoonnummer', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .put('/api/user/x')
+                .send({
+                    firstName: 'Jacob',
+                    lastName: 'Edwards',
+                    isActive: 1,
+                    password: "Password1234",
+                    phoneNumber: "0519",
+                    street: "Street",
+                    city: "Anytown"
+                })
                 .end((err, res) => {
+
                     done();
                 });
         });
         it('TC-205-4 Gebruiker bestaat niet', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .delete('/api/user/8787587587587758')
                 .end((err, res) => {
+                    res.body.should.have.status(404)
+                    res.body.should.has.property('data').to.be.empty;
                     done();
                 });
         });
@@ -355,20 +388,72 @@ describe('TC-20x - User', () => {
                 });
         });
         it('TC-205-6 Gebruiker-ID bestaat', (done) => {
+            //Dit kan veranderd worden door de database te clearen en iets toe te voegen en die updaten, maar voor nu werkt dit.
+            //GET USER 5
             chai.request(server)
-                .get('/api/user/1')
+                .get('/api/user/5')
                 .end((err, res) => {
-                    done();
+                    res.body.should.have.status(200);
+                    res.body.should.have.property('data').that.is.an('object');
+                    const notUpdatedUser = res.body.data;
+                    notUpdatedUser.should.have.property('firstName').to.be.equal('Henk');
+
+                    //UPDATE USER 5
+                    chai.request(server)
+                        .put('/api/user/5')
+                        .send({
+                            firstName: "Henkie",
+                            lastName: "Tankie",
+                            isActive: 1,
+                            emailAdress: "h.tankie@server.com",
+                            password: "secret",
+                            phoneNumber: "06 12425495",
+                            roles: "editor,guest",
+                            street: "",
+                            city: ""
+                        })
+                        .end((err, res) => {
+                            res.body.should.have.status(200);
+                            const updatedUser = res.body.data;
+                            updatedUser.should.have.property('firstName').to.be.equal('Henkie')
+                            updatedUser.should.have.property('emailAdress').to.be.equal('h.tankie@server.com')
+                                //RETURN USER 5 TO DEFAULT VALUE
+                            chai.request(server)
+                                .put('/api/user/5')
+                                .send({
+                                    firstName: "Henk",
+                                    lastName: "Tank",
+                                    isActive: 1,
+                                    emailAdress: "h.tank@server.com",
+                                    password: "secret",
+                                    phoneNumber: "06 12425495",
+                                    roles: "editor,guest",
+                                    street: "",
+                                    city: ""
+                                })
+                                .end((err, res) => {
+                                    done();
+                                })
+
+                        });
+
+
                 });
+
+            //after test finished, reset to old data?
         });
     });
 
-
+    //TESTCASE 206 -------------------------------------------------------------------------------------------------
     describe('TC-206 Verwijderen van user', () => {
         it('TC-206-1 Gebruiker bestaat niet', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .delete('/api/user/99292818128')
                 .end((err, res) => {
+                    res.body.should.have.status(404)
+                    res.body.should.has.property('status').that.equals(404)
+                    res.body.should.has.property('data').to.be.empty;
+                    res.body.should.has.property('message').that.equals('User with ID 99292818128 not found')
                     done();
                 });
         });

@@ -5,9 +5,9 @@ const pool = require('../utils/mysql-db');
 //TODO:
 //getAllUsers - done
 //createUser - done
-//getProfile - done?
+//getProfile - done
 //getUserId - done
-//updateUserId - 
+//updateUserId - done
 //deleteUserId - done
 
 
@@ -271,6 +271,15 @@ const userController = {
     },
     updateUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
+        const userEmail = req.body.emailAdress;
+
+        if (!userEmail) {
+            return res.status(400).json({
+                status: 400,
+                message: `Missing email`,
+                data: {}
+            });
+        }
 
         pool.getConnection(function(err, conn) {
             if (err) {
@@ -279,6 +288,7 @@ const userController = {
             }
 
             //ASSERT
+
 
 
             //SEARCH USER
@@ -303,7 +313,13 @@ const userController = {
                         user.emailAdress = req.body.emailAdress || user.emailAdress;
                         user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
 
-
+                        if (!validatePhoneNumber(user.phoneNumber)) {
+                            return res.status(400).json({
+                                status: 400,
+                                message: 'Invalid phone number',
+                                data: {}
+                            });
+                        }
 
                         //SAVE UPDATED USER
                         conn.query(`UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`, function(err, results, fields) {
