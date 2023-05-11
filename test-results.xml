@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.204" tests="32" failures="0">
+  <testsuite name="Root Suite" timestamp="2023-05-11T07:47:59" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Server-info" timestamp="2023-05-11T07:47:59" tests="1" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\info.test.js" time="0.025" failures="0">
+    <testcase name="Server-info TC-102 - Server info" time="0.024" classname="TC-102 - Server info">
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-20x - User" timestamp="2023-05-11T07:47:59" tests="0" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TC-201 Registreren als nieuwe user" timestamp="2023-05-11T07:47:59" tests="8" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.099" failures="0">
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-1 Verplicht veld ontbreekt" time="0.057" classname="TC-201-1 Verplicht veld ontbreekt">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-2-1 Niet-valide emailadres" time="0.007" classname="TC-201-2-1 Niet-valide emailadres">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-2-2 Niet-valide emailadres" time="0.004" classname="TC-201-2-2 Niet-valide emailadres">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-2-3 Niet-valide emailadres" time="0.007" classname="TC-201-2-3 Niet-valide emailadres">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-3-1 Niet-valide wachtwoorden" time="0.004" classname="TC-201-3-1 Niet-valide wachtwoorden">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-3-2 Niet-valide wachtwoorden" time="0.006" classname="TC-201-3-2 Niet-valide wachtwoorden">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-4 Gebruiker bestaat al" time="0.005" classname="TC-201-4 Gebruiker bestaat al">
+    </testcase>
+    <testcase name="TC-20x - User TC-201 Registreren als nieuwe user TC-201-5 Gebruiker succesvol geregistreerd" time="0.006" classname="TC-201-5 Gebruiker succesvol geregistreerd">
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-202 Opvragen van overzicht users" timestamp="2023-05-11T07:47:59" tests="7" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.027" failures="0">
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-1 Opvragen van overzicht users" time="0.004" classname="TC-202-1 Opvragen van overzicht users">
+    </testcase>
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-2-1 Toon gebruikers met zoekterm op niet-bestaande velden" time="0.003" classname="TC-202-2-1 Toon gebruikers met zoekterm op niet-bestaande velden">
+    </testcase>
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-2-2 Toon gebruikers met zoekterm op niet-bestaande velden" time="0.006" classname="TC-202-2-2 Toon gebruikers met zoekterm op niet-bestaande velden">
+    </testcase>
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false" time="0.003" classname="TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false">
+    </testcase>
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-4 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=true" time="0.002" classname="TC-202-4 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=true">
+    </testcase>
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-5-1 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)" time="0.002" classname="TC-202-5-1 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)">
+    </testcase>
+    <testcase name="TC-20x - User TC-202 Opvragen van overzicht users TC-202-5-2 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)" time="0.004" classname="TC-202-5-2 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)">
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-203 Opvragen van gebruikersprofiel" timestamp="2023-05-11T07:47:59" tests="2" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.009" failures="0">
+    <testcase name="TC-20x - User TC-203 Opvragen van gebruikersprofiel TC-203-1 Ongeldig token" time="0.005" classname="TC-203-1 Ongeldig token">
+    </testcase>
+    <testcase name="TC-20x - User TC-203 Opvragen van gebruikersprofiel TC-203-2 Gebruiker is ingelogd met geldig token" time="0.003" classname="TC-203-2 Gebruiker is ingelogd met geldig token">
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-204 Opvragen van usergegevens bij ID" timestamp="2023-05-11T07:47:59" tests="4" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.013" failures="0">
+    <testcase name="TC-20x - User TC-204 Opvragen van usergegevens bij ID TC-204-1 Ongeldig token" time="0.003" classname="TC-204-1 Ongeldig token">
+    </testcase>
+    <testcase name="TC-20x - User TC-204 Opvragen van usergegevens bij ID TC-204-2 Gebruiker-ID bestaat niet" time="0.004" classname="TC-204-2 Gebruiker-ID bestaat niet">
+    </testcase>
+    <testcase name="TC-20x - User TC-204 Opvragen van usergegevens bij ID TC-204-3-1 Gebruiker-ID bestaat" time="0.003" classname="TC-204-3-1 Gebruiker-ID bestaat">
+    </testcase>
+    <testcase name="TC-20x - User TC-204 Opvragen van usergegevens bij ID TC-204-3-2 Gebruiker-ID bestaat" time="0.003" classname="TC-204-3-2 Gebruiker-ID bestaat">
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-205 Updaten van usergegevens" timestamp="2023-05-11T07:48:00" tests="6" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.016" failures="0">
+    <testcase name="TC-20x - User TC-205 Updaten van usergegevens TC-205-1 Verplicht veld &quot;emailAddress&quot; ontbreekt" time="0.002" classname="TC-205-1 Verplicht veld &quot;emailAddress&quot; ontbreekt">
+    </testcase>
+    <testcase name="TC-20x - User TC-205 Updaten van usergegevens TC-205-2 De gebruiker is niet de eigenaar van de data" time="0.002" classname="TC-205-2 De gebruiker is niet de eigenaar van de data">
+    </testcase>
+    <testcase name="TC-20x - User TC-205 Updaten van usergegevens TC-205-3 Niet-valide telefoonnummer" time="0.002" classname="TC-205-3 Niet-valide telefoonnummer">
+    </testcase>
+    <testcase name="TC-20x - User TC-205 Updaten van usergegevens TC-205-4 Gebruiker bestaat niet" time="0.002" classname="TC-205-4 Gebruiker bestaat niet">
+    </testcase>
+    <testcase name="TC-20x - User TC-205 Updaten van usergegevens TC-205-5 Niet ingelogd" time="0.003" classname="TC-205-5 Niet ingelogd">
+    </testcase>
+    <testcase name="TC-20x - User TC-205 Updaten van usergegevens TC-205-6 Gebruiker-ID bestaat" time="0.002" classname="TC-205-6 Gebruiker-ID bestaat">
+    </testcase>
+  </testsuite>
+  <testsuite name="TC-206 Verwijderen van user" timestamp="2023-05-11T07:48:00" tests="4" file="C:\Prog4ShareAMeal\Share-A-Meal-P4\test\integration\user.test.js" time="0.013" failures="0">
+    <testcase name="TC-20x - User TC-206 Verwijderen van user TC-206-1 Gebruiker bestaat niet" time="0.002" classname="TC-206-1 Gebruiker bestaat niet">
+    </testcase>
+    <testcase name="TC-20x - User TC-206 Verwijderen van user TC-206-2 Gebruiker is niet ingelogd" time="0.001" classname="TC-206-2 Gebruiker is niet ingelogd">
+    </testcase>
+    <testcase name="TC-20x - User TC-206 Verwijderen van user TC-206-3 De gebruiker is niet de eigenaar van de data" time="0.002" classname="TC-206-3 De gebruiker is niet de eigenaar van de data">
+    </testcase>
+    <testcase name="TC-20x - User TC-206 Verwijderen van user TC-206-4 Gebruiker succesvol verwijderd" time="0.006" classname="TC-206-4 Gebruiker succesvol verwijderd">
+    </testcase>
+  </testsuite>
+</testsuites>
