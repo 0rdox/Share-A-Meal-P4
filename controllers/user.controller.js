@@ -67,7 +67,7 @@ const userController = {
                     }
                     if (results) {
                         res.status(200).json({
-                            statusCode: 200,
+                            status: 200,
                             message: 'User GetAll endpoint',
                             data: results,
                         })
@@ -159,18 +159,61 @@ const userController = {
         });
     },
     getProfile: (req, res) => {
-        res.status(200).json({
-            status: 200,
-            message: 'Your profile',
-            data: {
-                id: 20,
-                firstName: "John",
-                lastName: "Evans",
-                street: "Lovendijkstraat 61",
-                city: "Breda",
-                isActive: true,
-                emailAdress: "j.evans@server.com",
-                phoneNumber: "06 12426475"
+        // const getUserId1 = ""
+        // res.status(200).json({
+        //     status: 200,
+        //     message: 'Your profile',
+        //     data: {
+        //         id: 20,
+        //         firstName: "John",
+        //         lastName: "Evans",
+        //         street: "Lovendijkstraat 61",
+        //         city: "Breda",
+        //         isActive: true,
+        //         emailAdress: "j.evans@server.com",
+        //         phoneNumber: "06 12426475"
+        //     }
+        // });
+
+        pool.getConnection(function(err, conn) {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+            }
+
+
+            if (conn) {
+                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=1`, function(err, results, fields) {
+                    if (err) {
+                        next({
+                            code: 404,
+                            message: err.message
+                        });
+                    }
+
+                    //
+                    if (results.length == 1) {
+                        res.status(200).json({
+                            status: 200,
+                            message: `Your profile`,
+                            data: results[0],
+                        })
+                    } else {
+                        res.status(404).json({
+                            status: 404,
+                            message: `Profile not found`,
+                            data: {}
+                        })
+                    }
+                    // if (results) {
+                    //     res.status(200).json({
+                    //         status: 200,
+                    //         message: `User met ID ${userId} found`,
+                    //         data: results[0],
+                    //     })
+                    //        }
+                    conn.release();
+                });
             }
         });
 
@@ -316,7 +359,7 @@ const userController = {
 
                 if (result.affectedRows === 0) {
                     res.status(404).json({
-                        statusCode: 404,
+                        status: 404,
                         message: `User with ID ${userId} not found`,
                         data: {},
                     });
