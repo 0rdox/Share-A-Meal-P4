@@ -12,7 +12,7 @@ jobs:
       MYSQL_ROOT_PASSWORD: root # default root password to use must be 'root'
       DB_HOST: '127.0.0.1'
       DB_PORT: '3306'
-      DB_DATABASE: shareameal
+      DB_DATABASE: share_a_meal
       DB_USER: root
       DB_PASSWORD: root
     services:
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
-      - name: Set permissions for mocha binary
+      - name: Set permissions for mocha 
         run: chmod 0777 ./node_modules/.bin/mocha
 
       - name: Start MySQL connection from host
@@ -71,7 +71,7 @@ jobs:
       - name: 'Current token'
         run: |
           echo "secrets.RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}"
-          
+
       - name: Install Railway
         run: npm i -g @railway/cli
 

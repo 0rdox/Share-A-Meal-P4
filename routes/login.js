@@ -12,7 +12,7 @@ var router = express.Router();
 
 /* POST user registration. */
 router.get('/login', function(req, res, next) {
-    res.send('These are the meals');
+    res.send('Login Here');
 });
 
 
