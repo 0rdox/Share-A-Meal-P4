@@ -45,13 +45,12 @@ jobs:
       - name: npm test
         run: |
           npm test -- --DB_PASSWORD {{env.MYSQL_ROOT_PASSWORD}} --DB_USER root --DB_NAME ${{env.DB_DATABASE}}
-          
-      - name: Upload test results
-        uses: actions/upload-artifact@v2
-        with:
+      
+      - name: publish test results
+      uses: actions/upload-artifact@v2
+      with: 
         name: test-results
-        path: test-results.xml
-
+        path: test-results.xml 
 
   #   Heroku-deploy:
   #     needs: integrationtests
