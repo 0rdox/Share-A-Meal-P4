@@ -71,7 +71,7 @@ jobs:
       - name: 'Current token'
         run: |
           echo "secrets.RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}"
-
+          
       - name: Install Railway
         run: npm i -g @railway/cli
 
