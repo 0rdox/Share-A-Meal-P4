@@ -120,9 +120,9 @@ const userController = {
                     try {
                         assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
                         assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
-                        assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
-                        assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
-                        assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
+                        // assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
+                        // assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
+                        // assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
                     } catch (err) {
                         //STATUS ERROR
                         res.status(400).json({
