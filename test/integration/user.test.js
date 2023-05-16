@@ -22,7 +22,7 @@ const should = chai.should();
 describe('TC-20x - User', () => {
     //TESTCASE 201 -------------------------------------------------------------------------------------------------
     describe('TC-201 Registreren als nieuwe user', () => {
-        it.skip('TC-201-1 Verplicht veld ontbreekt', (done) => {
+        it('TC-201-1 Verplicht veld ontbreekt', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -38,7 +38,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-2-1 Niet-valide emailadres', (done) => {
+        it('TC-201-2-1 Niet-valide emailadres', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -54,7 +54,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-2-2 Niet-valide emailadres', (done) => {
+        it('TC-201-2-2 Niet-valide emailadres', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -70,7 +70,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-2-3 Niet-valide emailadres', (done) => {
+        it('TC-201-2-3 Niet-valide emailadres', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -86,7 +86,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-3-1 Niet-valide wachtwoorden', (done) => {
+        it('TC-201-3-1 Niet-valide wachtwoorden', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -103,7 +103,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-3-2 Niet-valide wachtwoorden', (done) => {
+        it('TC-201-3-2 Niet-valide wachtwoorden', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -361,13 +361,13 @@ describe('TC-20x - User', () => {
                     firstName: 'Jacob',
                     lastName: 'Edwards',
                     isActive: 1,
+                    emailAdress: 'j.edwards@server.com',
                     password: "Password1234",
                     phoneNumber: "0519",
                     street: "Street",
                     city: "Anytown"
                 })
                 .end((err, res) => {
-
                     done();
                 });
         });

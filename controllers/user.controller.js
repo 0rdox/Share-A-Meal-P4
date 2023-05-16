@@ -120,9 +120,9 @@ const userController = {
                     try {
                         assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
                         assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
-                        // assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
-                        // assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
-                        // assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
+                        assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
+                        assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
+                        assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
                     } catch (err) {
                         //STATUS ERROR
                         res.status(400).json({
@@ -274,80 +274,83 @@ const userController = {
         const userId = parseInt(req.params.userid);
         const userEmail = req.body.emailAdress;
 
-        if (!userEmail) {
-            return res.status(400).json({
-                status: 400,
-                message: `Missing email`,
-                data: {}
-            });
-        }
-
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
-                next('error: ' + err.message);
+                return next('error: ' + err.message);
             }
 
-            //ASSERT
-
-
-
-            //SEARCH USER
+            // SEARCH USER
             if (conn) {
-                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
+                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(
+                    err,
+                    results,
+                    fields
+                ) {
                     if (err) {
-                        res.status(400).json({
+                        conn.release();
+                        return res.status(400).json({
                             status: 400,
-                            message: `User with UserID ${userId} not found`,
-                            data: {}
+                            message: `Error while retrieving user with UserID ${userId}`,
+                            data: {},
                         });
                     }
 
-
-                    //UPDATE USER
-                    if (results.length === 1) {
-                        const user = results[0];
-                        user.firstName = req.body.firstName || user.firstName;
-                        user.lastName = req.body.lastName || user.lastName;
-                        user.street = req.body.street || user.street;
-                        user.city = req.body.city || user.city;
-                        user.isActive = req.body.isActive || user.isActive;
-                        user.emailAdress = req.body.emailAdress || user.emailAdress;
-                        user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-
-                        if (!validatePhoneNumber(user.phoneNumber)) {
-                            return res.status(400).json({
-                                status: 400,
-                                message: 'Invalid phone number',
-                                data: {}
-                            });
-                        }
-
-                        //SAVE UPDATED USER
-                        conn.query(`UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`,
-                            function(err, results, fields) {
-                                if (err) {
-                                    next({
-                                        code: 500,
-                                        message: err.message
-                                    });
-                                }
-
-                                res.status(200).json({
-                                    status: 200,
-                                    message: `User with ID ${userId} has been updated`,
-                                    data: user
-                                });
-                            });
-                    } else {
-                        res.status(404).json({
+                    if (results.length === 0) {
+                        conn.release();
+                        return res.status(404).json({
                             status: 404,
                             message: `User with ID ${userId} not found`,
-                            data: {}
+                            data: {},
                         });
                     }
 
-                    conn.release();
+                    // UPDATE USER
+                    const user = results[0];
+                    user.firstName = req.body.firstName || user.firstName;
+                    user.lastName = req.body.lastName || user.lastName;
+                    user.street = req.body.street || user.street;
+                    user.city = req.body.city || user.city;
+                    user.isActive = req.body.isActive || user.isActive;
+                    user.emailAdress = req.body.emailAdress || user.emailAdress;
+                    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+
+                    if (!validatePhoneNumber(user.phoneNumber)) {
+                        conn.release();
+                        return res.status(400).json({
+                            status: 400,
+                            message: 'Invalid phone number',
+                            data: {},
+                        });
+                    }
+
+                    if (!userEmail) {
+                        conn.release();
+                        return res.status(400).json({
+                            status: 400,
+                            message: `Missing email`,
+                            data: {},
+                        });
+                    }
+                    // SAVE UPDATED USER
+                    conn.query(
+                        `UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`,
+                        function(err, results, fields) {
+                            conn.release();
+                            if (err) {
+                                return next({
+                                    code: 500,
+                                    message: err.message,
+                                });
+                            }
+
+                            res.status(200).json({
+                                status: 200,
+                                message: `User with ID ${userId} has been updated`,
+                                data: user,
+                            });
+                        }
+                    );
                 });
             }
         });
