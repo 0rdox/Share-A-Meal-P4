@@ -237,11 +237,11 @@ const userController = {
             if (conn) {
                 conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
                     if (err) {
-                        next({
+                        res.status(404).json({
                             status: 404,
-                            message: err.message + ` User with ID ${userId} not found`,
+                            message: `User with ID ${userId} not found`,
                             data: {}
-                        });
+                        })
                     }
 
                     //
@@ -296,9 +296,10 @@ const userController = {
             if (conn) {
                 conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
                     if (err) {
-                        next({
-                            status: 404,
-                            message: err.message
+                        res.status(400).json({
+                            status: 400,
+                            message: `User with UserID ${userId} not found`,
+                            data: {}
                         });
                     }
 
@@ -323,20 +324,21 @@ const userController = {
                         }
 
                         //SAVE UPDATED USER
-                        conn.query(`UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`, function(err, results, fields) {
-                            if (err) {
-                                next({
-                                    code: 500,
-                                    message: err.message
-                                });
-                            }
+                        conn.query(`UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`,
+                            function(err, results, fields) {
+                                if (err) {
+                                    next({
+                                        code: 500,
+                                        message: err.message
+                                    });
+                                }
 
-                            res.status(200).json({
-                                status: 200,
-                                message: `User with ID ${userId} has been updated`,
-                                data: user
+                                res.status(200).json({
+                                    status: 200,
+                                    message: `User with ID ${userId} has been updated`,
+                                    data: user
+                                });
                             });
-                        });
                     } else {
                         res.status(404).json({
                             status: 404,
@@ -421,8 +423,8 @@ function validatePassword(pass) {
 }
 
 function validatePhoneNumber(phoneNumber) {
-    //VALIDATES 061-242-5475 / xxx-xxx-xxxx
-    const regex = /^\d{2}\s\d{8}$/;
+    //VALIDATES 06 12345678 & 06-1234578
+    const regex = /^(06)[- ]?\d{8}$/;
     return regex.test(phoneNumber);
 }
 
