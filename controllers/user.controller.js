@@ -102,7 +102,7 @@ const userController = {
                 conn.query(checkUserSql, function(err, results, fields) {
                     if (err) {
                         next({
-                            code: 409,
+                            status: 409,
                             message: err.message
                         });
                     }
@@ -141,7 +141,7 @@ const userController = {
                     conn.query(createUserSql, function(err, results, fields) {
                         if (err) {
                             next({
-                                code: 409,
+                                status: 409,
                                 message: err.message,
                             });
                         }
@@ -186,7 +186,7 @@ const userController = {
                 conn.query(`SELECT * FROM \`user\` WHERE \`id\`=1`, function(err, results, fields) {
                     if (err) {
                         next({
-                            code: 404,
+                            status: 404,
                             message: err.message
                         });
                     }
@@ -238,8 +238,9 @@ const userController = {
                 conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
                     if (err) {
                         next({
-                            code: 404,
-                            message: err.message
+                            status: 404,
+                            message: err.message + ` User with ID ${userId} not found`,
+                            data: {}
                         });
                     }
 
@@ -296,7 +297,7 @@ const userController = {
                 conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
                     if (err) {
                         next({
-                            code: 404,
+                            status: 404,
                             message: err.message
                         });
                     }
