@@ -149,7 +149,7 @@ describe('TC-20x - User', () => {
                     street: '123 Main St',
                     city: 'Anytown',
                     emailAdress: 'm.peters@avans.nl',
-                    phoneNumber: '05 51231234',
+                    phoneNumber: '06 51231234',
                     password: 'Password1234'
                 })
                 .end((err, res) => {
