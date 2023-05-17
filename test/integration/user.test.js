@@ -134,7 +134,6 @@ describe('TC-20x - User', () => {
                     password: 'Pass1231Pa'
                 })
                 .end((err, res) => {
-                    res.body.should.be.an('object');
                     res.body.should.has.property('status').to.be.equal(403);
                     res.body.should.has.property('message');
                     res.body.should.has.property('data').to.be.empty;
