@@ -1,11 +1,7 @@
 const assert = require('assert');
 const pool = require('../utils/mysql-db');
 
-const express = require('express');
-const app = express();
 
-// Add the following line to parse JSON request bodies
-app.use(express.json());
 //TODO:
 //Make UpdateUserID More efficient -> remove search user query
 
@@ -77,7 +73,7 @@ const userController = {
         });
     },
     createUser: (req, res, next) => {
-        console.log(req.body)
+
         const user = {
             id: req.body.id,
             firstName: req.body.firstName,
@@ -89,8 +85,6 @@ const userController = {
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,
         }
-
-        //console.log(user)
 
         //ASSERT
         try {
