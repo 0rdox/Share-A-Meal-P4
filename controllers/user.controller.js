@@ -118,16 +118,15 @@ const userController = {
                                 status: 403,
                                 message: `User with email ${user.emailAdress} already exists.`,
                                 data: {}
-
                             })
+                        } else {
+                            return next({
+                                status: 409,
+                                message: err.message,
+                            });
                         }
                     }
-                    if (err) {
-                        next({
-                            status: 409,
-                            message: err.message,
-                        });
-                    }
+
                     if (results) {
                         res.status(201).json({
                             status: 201,
