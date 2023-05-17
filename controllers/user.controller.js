@@ -1,6 +1,11 @@
 const assert = require('assert');
 const pool = require('../utils/mysql-db');
 
+const express = require('express');
+const app = express();
+
+// Add the following line to parse JSON request bodies
+app.use(express.json());
 //TODO:
 //Make UpdateUserID More efficient -> remove search user query
 
@@ -138,59 +143,6 @@ const userController = {
                     }
                     conn.release();
                 });
-
-                //old method
-
-                // // CHECK IF USER EXISTS IN DATABASE
-                // const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAdress\` = '${user.emailAdress}'`;
-                // pool.getConnection(function(err, conn) {
-                //     if (err) {
-                //         console.log('error', err);
-                //         next('error: ' + err.message);
-                //     }
-                //     if (conn) {
-                //         conn.query(checkUserSql, function(err, results, fields) {
-                //             if (err) {
-                //                 next({
-                //                     status: 409,
-                //                     message: err.message
-                //                 });
-                //             }
-                //             if (results.length > 0) {
-                //                 res.status(403).json({
-                //                     status: 403,
-                //                     message: `User with Email-Address ${user.emailAdress} already exists`,
-                //                     data: {},
-                //                 });
-                //                 conn.release();
-                //                 return;
-                //             }
-
-
-
-                //             //INSERT USER INTO DATABASE
-                //             const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAdress\`, \`phoneNumber\`, \`password\`) 
-                //                 VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAdress}', '${user.phoneNumber}', '${user.password}')`;
-
-                //             conn.query(createUserSql, function(err, results, fields) {
-                //                 if (err) {
-                //                     next({
-                //                         status: 409,
-                //                         message: err.message,
-                //                     });
-                //                 }
-                //                 if (results) {
-                //                     res.status(201).json({
-                //                         status: 201,
-                //                         message: `User with Email-Address ${user.emailAdress} has been created`,
-                //                         data: { user },
-                //                     });
-                //                 }
-                //                 conn.release();
-                //             });
-                //         });
-                //     }
-                // });
             }
         })
     },
