@@ -20,7 +20,7 @@ app.use('/', indexRouter);
 app.use('/api/user', usersRouter);
 app.use('/api/info', infoRouter);
 app.use('/api/meal', mealRouter);
-app.use('/api/auth', loginRouter);
+app.use('/api/login', loginRouter);
 
 
 //Console.logs methods when called

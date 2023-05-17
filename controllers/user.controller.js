@@ -1,14 +1,8 @@
 const assert = require('assert');
-//const results = require('../utils/inmem-db');
 const pool = require('../utils/mysql-db');
 
 //TODO:
-//getAllUsers - done
-//createUser - done
-//getProfile - done
-//getUserId - done
-//updateUserId - done
-//deleteUserId - done
+//Make UpdateUserID More efficient -> remove search user query
 
 
 
@@ -78,6 +72,7 @@ const userController = {
         });
     },
     createUser: (req, res, next) => {
+        console.log(req.body)
         const user = {
             id: req.body.id,
             firstName: req.body.firstName,
@@ -90,91 +85,117 @@ const userController = {
             password: req.body.password,
         }
 
+        //console.log(user)
 
-        // CHECK IF USER EXISTS IN DATABASE
-        const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAdress\` = '${user.emailAdress}'`;
+        //ASSERT
+        try {
+            assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
+            assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
+            assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
+            assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
+            assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
+        } catch (err) {
+            //STATUS ERROR
+            res.status(400).json({
+                status: 400,
+                message: err.message.toString(),
+                data: {},
+            });
+            return;
+        }
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
                 next('error: ' + err.message);
             }
             if (conn) {
-                conn.query(checkUserSql, function(err, results, fields) {
+                const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAdress\`, \`phoneNumber\`, \`password\`) 
+        VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAdress}', '${user.phoneNumber}', '${user.password}')`;
+
+                conn.query(createUserSql, function(err, results, fields) {
+                    if (err) {
+                        if (err.code === 'ER_DUP_ENTRY') {
+                            res.status(403).json({
+                                status: 403,
+                                message: `User with email ${user.emailAdress} already exists.`,
+                                data: {}
+
+                            })
+                        }
+                    }
                     if (err) {
                         next({
                             status: 409,
-                            message: err.message
+                            message: err.message,
                         });
                     }
-                    if (results.length > 0) {
-                        res.status(403).json({
-                            status: 403,
-                            message: `User with Email-Address ${user.emailAdress} already exists`,
-                            data: {},
+                    if (results) {
+                        res.status(201).json({
+                            status: 201,
+                            message: `User with Email-Address ${user.emailAdress} has been created`,
+                            data: { user },
                         });
-                        conn.release();
-                        return;
                     }
-
-                    //ASSERT -- maybe place before connection
-                    try {
-                        assert(typeof user.firstName === 'string' && user.firstName.trim() !== '', 'First name must be a non-empty string');
-                        assert(typeof user.lastName === 'string' && user.lastName.trim() !== '', 'Last name must be a non-empty string');
-                        assert(typeof user.emailAdress === 'string' && validateEmail(user.emailAdress), 'Email Address must be a valid email address');
-                        assert(typeof user.password === 'string' && validatePassword(user.password), 'Password must be a valid password')
-                        assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
-                    } catch (err) {
-                        //STATUS ERROR
-                        res.status(400).json({
-                            status: 400,
-                            message: err.message.toString(),
-                            data: {},
-                        });
-                        conn.release();
-                        return;
-                    }
-
-                    //INSERT USER INTO DATABASE
-                    const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAdress\`, \`phoneNumber\`, \`password\`) 
-                        VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAdress}', '${user.phoneNumber}', '${user.password}')`;
-
-                    conn.query(createUserSql, function(err, results, fields) {
-                        if (err) {
-                            next({
-                                status: 409,
-                                message: err.message,
-                            });
-                        }
-                        if (results) {
-                            res.status(201).json({
-                                status: 201,
-                                message: `User with Email-Address ${user.emailAdress} has been created`,
-                                data: { user },
-                            });
-                        }
-                        conn.release();
-                    });
+                    conn.release();
                 });
+
+                //old method
+
+                // // CHECK IF USER EXISTS IN DATABASE
+                // const checkUserSql = `SELECT * FROM \`user\` WHERE \`emailAdress\` = '${user.emailAdress}'`;
+                // pool.getConnection(function(err, conn) {
+                //     if (err) {
+                //         console.log('error', err);
+                //         next('error: ' + err.message);
+                //     }
+                //     if (conn) {
+                //         conn.query(checkUserSql, function(err, results, fields) {
+                //             if (err) {
+                //                 next({
+                //                     status: 409,
+                //                     message: err.message
+                //                 });
+                //             }
+                //             if (results.length > 0) {
+                //                 res.status(403).json({
+                //                     status: 403,
+                //                     message: `User with Email-Address ${user.emailAdress} already exists`,
+                //                     data: {},
+                //                 });
+                //                 conn.release();
+                //                 return;
+                //             }
+
+
+
+                //             //INSERT USER INTO DATABASE
+                //             const createUserSql = `INSERT INTO \`user\` (\`id\`,\`firstName\`, \`lastName\`, \`street\`, \`city\`, \`isActive\`, \`emailAdress\`, \`phoneNumber\`, \`password\`) 
+                //                 VALUES ('${user.id}','${user.firstName}', '${user.lastName}', '${user.street}', '${user.city}', ${user.isActive}, '${user.emailAdress}', '${user.phoneNumber}', '${user.password}')`;
+
+                //             conn.query(createUserSql, function(err, results, fields) {
+                //                 if (err) {
+                //                     next({
+                //                         status: 409,
+                //                         message: err.message,
+                //                     });
+                //                 }
+                //                 if (results) {
+                //                     res.status(201).json({
+                //                         status: 201,
+                //                         message: `User with Email-Address ${user.emailAdress} has been created`,
+                //                         data: { user },
+                //                     });
+                //                 }
+                //                 conn.release();
+                //             });
+                //         });
+                //     }
+                // });
             }
-        });
+        })
     },
     getProfile: (req, res) => {
-        // const getUserId1 = ""
-        // res.status(200).json({
-        //     status: 200,
-        //     message: 'Your profile',
-        //     data: {
-        //         id: 20,
-        //         firstName: "John",
-        //         lastName: "Evans",
-        //         street: "Lovendijkstraat 61",
-        //         city: "Breda",
-        //         isActive: true,
-        //         emailAdress: "j.evans@server.com",
-        //         phoneNumber: "06 12426475"
-        //     }
-        // });
-
+        const userId = req.userId;
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
@@ -183,7 +204,7 @@ const userController = {
 
 
             if (conn) {
-                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=1`, function(err, results, fields) {
+                conn.query(`SELECT * FROM \`user\` WHERE \`id\`= ${userId}`, function(err, results, fields) {
                     if (err) {
                         next({
                             status: 404,
@@ -191,7 +212,6 @@ const userController = {
                         });
                     }
 
-                    //
                     if (results.length == 1) {
                         res.status(200).json({
                             status: 200,
@@ -205,25 +225,10 @@ const userController = {
                             data: {}
                         })
                     }
-                    // if (results) {
-                    //     res.status(200).json({
-                    //         status: 200,
-                    //         message: `User met ID ${userId} found`,
-                    //         data: results[0],
-                    //     })
-                    //        }
                     conn.release();
                 });
             }
         });
-
-        // if (!token) {
-        //     res.status(401).json({
-        //         status: 401,
-        //         message: 'Invalid token',
-        //         data: {}
-        //     })
-        // }
     },
     getUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
@@ -272,6 +277,16 @@ const userController = {
     },
     updateUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
+
+        // VERIFY TOKEN
+        if (userId != req.userId) {
+            return res.status(403).json({
+                status: 403,
+                message: "User is not the owner of this data",
+                data: {}
+            });
+        }
+
         const userEmail = req.body.emailAdress;
 
         pool.getConnection(function(err, conn) {
@@ -282,11 +297,7 @@ const userController = {
 
             // SEARCH USER
             if (conn) {
-                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(
-                    err,
-                    results,
-                    fields
-                ) {
+                conn.query(`SELECT * FROM \`user\` WHERE \`id\`=${userId}`, function(err, results, fields) {
                     if (err) {
                         conn.release();
                         return res.status(400).json({
@@ -332,6 +343,7 @@ const userController = {
                             data: {},
                         });
                     }
+
                     // SAVE UPDATED USER
                     conn.query(
                         `UPDATE \`user\` SET \`firstName\`='${user.firstName}', \`lastName\`='${user.lastName}', \`street\`='${user.street}', \`city\`='${user.city}', \`isActive\`=${user.isActive ? 1 : 0}, \`emailAdress\`='${user.emailAdress}', \`phoneNumber\`='${user.phoneNumber}' WHERE \`id\`=${userId}`,
@@ -355,10 +367,20 @@ const userController = {
             }
         });
     },
+
     deleteUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
 
-        //SQL Query
+        // VERIFY TOKEN
+        if (userId !== req.userId) {
+            return res.status(403).json({
+                status: 403,
+                message: "User is not the owner of this data",
+                data: {},
+            });
+        }
+
+        // SQL Query
         const sql = `DELETE FROM \`user\` WHERE \`id\` = ${userId}`;
 
         // Use pool connection to execute SQL query
@@ -374,7 +396,7 @@ const userController = {
                     console.log('error', err);
                     next({
                         code: 409,
-                        message: err.message
+                        message: err.message,
                     });
                     return;
                 }
@@ -397,16 +419,8 @@ const userController = {
             });
         });
     },
+
 };
-
-
-//HASHMAP FOR PASSWORDS -> PROBABLY GETTING DELETED
-var passwordMap = {};
-passwordMap['j.evans@server.com'] = 'Eendenbeker12';
-passwordMap['g.ernst@server.com'] = 'Gijskoektrommel1';
-passwordMap['e.garm@server.com'] = '123PASS123';
-passwordMap['d.crocker@server.com'] = 'Treasure1997'
-passwordMap['w.poro@server.com'] = 'PoroPoro1990'
 
 
 //VALIDATION

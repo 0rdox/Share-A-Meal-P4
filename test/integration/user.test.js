@@ -4,18 +4,21 @@ const server = require('../../app');
 chai.use(chaiHttp);
 const should = chai.should();
 
+const jwt = require('jsonwebtoken')
+const jwtSecretKey = require('../../utils/utils').jwtSecretKey;
+//testing
 
 //TODO:
-//(T) = Token
 //TC-201 - Done
 //TC-202 - Done
-//TC-203 - 203-1 (T)
-//TC-204 - 204-1 (T)
-//TC-205 - 205-2 (T) - 205-5 (T)
-//TC-206 - 206-2 (T) - 206-3 (T)
+//TC-203 - Done
+//TC-204 - Done
+//TC-205 - Done
+//TC-206 - Done
 
 //USE ClearDB's + Insert Data functions --> BeforeEach
 //rebuild database
+
 
 
 //USER TESTCASES
@@ -171,7 +174,9 @@ describe('TC-20x - User', () => {
         it('TC-202-1 Opvragen van overzicht users', (done) => {
             chai.request(server)
                 .get('/api/user')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
+
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
                     res.should.have.status(200);
                     done();
@@ -180,6 +185,7 @@ describe('TC-20x - User', () => {
         it('TC-202-2-1 Toon gebruikers met zoekterm op niet-bestaande velden', (done) => {
             chai.request(server)
                 .get('/api/user?fakeFilter=fake')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.body.should.have.property('data').that.is.empty;
                     res.should.have.status(200);
@@ -211,6 +217,7 @@ describe('TC-20x - User', () => {
         it('TC-202-4 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=true', (done) => {
             chai.request(server)
                 .get('/api/user?isActive=true')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
@@ -224,6 +231,7 @@ describe('TC-20x - User', () => {
         it.skip('TC-202-5-1 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)', (done) => {
             chai.request(server)
                 .get('/api/user?street=Street&isActive=true')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
@@ -243,6 +251,7 @@ describe('TC-20x - User', () => {
         it.skip('TC-202-5-2 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)', (done) => {
             chai.request(server)
                 .get('/api/user?firstName=John')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
@@ -270,6 +279,7 @@ describe('TC-20x - User', () => {
         it('TC-203-2 Gebruiker is ingelogd met geldig token', (done) => {
             chai.request(server)
                 .get('/api/user/profile')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200)
                     res.body.should.have.property('data').that.is.an('object');
@@ -286,6 +296,7 @@ describe('TC-20x - User', () => {
         it('TC-204-1 Ongeldig token', (done) => {
             chai.request(server)
                 .get('/api/user/1')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     done();
                 });
@@ -293,6 +304,7 @@ describe('TC-20x - User', () => {
         it('TC-204-2 Gebruiker-ID bestaat niet', (done) => {
             chai.request(server)
                 .get('/api/user/99292818128')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 18 }, jwtSecretKey))
                 .end((err, res) => {
                     res.body.should.have.status(404)
                     res.body.should.has.property('status').that.equals(404)
@@ -304,6 +316,7 @@ describe('TC-20x - User', () => {
         it('TC-204-3-1 Gebruiker-ID bestaat', (done) => {
             chai.request(server)
                 .get('/api/user/1')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('object');
@@ -315,6 +328,7 @@ describe('TC-20x - User', () => {
         it('TC-204-3-2 Gebruiker-ID bestaat', (done) => {
             chai.request(server)
                 .get('/api/user/2')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 2 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('object');
@@ -330,7 +344,8 @@ describe('TC-20x - User', () => {
     describe('TC-205 Updaten van usergegevens', () => {
         it('TC-205-1 Verplicht veld "emailAddress" ontbreekt', (done) => {
             chai.request(server)
-                .put('/api/user/x')
+                .put('/api/user/5')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 5 }, jwtSecretKey))
                 .send({
                     firstName: 'Jacob',
                     lastName: 'Edwards',
@@ -349,14 +364,19 @@ describe('TC-20x - User', () => {
         });
         it('TC-205-2 De gebruiker is niet de eigenaar van de data', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .put('/api/user/5')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 123 }, jwtSecretKey))
                 .end((err, res) => {
+                    res.body.should.have.status(403)
+                    res.body.should.has.property('message')
+                    res.body.should.has.property('data').to.be.empty;
                     done();
                 });
         });
         it('TC-205-3 Niet-valide telefoonnummer', (done) => {
             chai.request(server)
-                .put('/api/user/x')
+                .put('/api/user/5')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 5 }, jwtSecretKey))
                 .send({
                     firstName: 'Jacob',
                     lastName: 'Edwards',
@@ -373,7 +393,8 @@ describe('TC-20x - User', () => {
         });
         it('TC-205-4 Gebruiker bestaat niet', (done) => {
             chai.request(server)
-                .delete('/api/user/8787587587587758')
+                .put('/api/user/8787587587587758')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 8787587587587758 }, jwtSecretKey))
                 .end((err, res) => {
                     res.body.should.have.status(404)
                     res.body.should.has.property('data').to.be.empty;
@@ -382,8 +403,9 @@ describe('TC-20x - User', () => {
         });
         it('TC-205-5 Niet ingelogd', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .put('/api/user/1')
                 .end((err, res) => {
+                    res.body.should.have.status(401)
                     done();
                 });
         });
@@ -392,6 +414,7 @@ describe('TC-20x - User', () => {
             //GET USER 5
             chai.request(server)
                 .get('/api/user/5')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 5 }, jwtSecretKey))
                 .end((err, res) => {
                     res.body.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('object');
@@ -401,6 +424,7 @@ describe('TC-20x - User', () => {
                     //UPDATE USER 5
                     chai.request(server)
                         .put('/api/user/5')
+                        .set('Authorization', 'Bearer ' + jwt.sign({ userid: 5 }, jwtSecretKey))
                         .send({
                             firstName: "Henkie",
                             lastName: "Tankie",
@@ -420,6 +444,7 @@ describe('TC-20x - User', () => {
                                 //RETURN USER 5 TO DEFAULT VALUE
                             chai.request(server)
                                 .put('/api/user/5')
+                                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 5 }, jwtSecretKey))
                                 .send({
                                     firstName: "Henk",
                                     lastName: "Tank",
@@ -449,6 +474,7 @@ describe('TC-20x - User', () => {
         it('TC-206-1 Gebruiker bestaat niet', (done) => {
             chai.request(server)
                 .delete('/api/user/99292818128')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 99292818128 }, jwtSecretKey))
                 .end((err, res) => {
                     res.body.should.have.status(404)
                     res.body.should.has.property('status').that.equals(404)
@@ -459,21 +485,27 @@ describe('TC-20x - User', () => {
         });
         it('TC-206-2 Gebruiker is niet ingelogd', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .delete('/api/user/1')
                 .end((err, res) => {
+                    res.body.should.have.status(401)
                     done();
                 });
         });
         it('TC-206-3 De gebruiker is niet de eigenaar van de data', (done) => {
             chai.request(server)
-                .get('/api/user/1')
+                .delete('/api/user/5')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 12 }, jwtSecretKey))
                 .end((err, res) => {
+                    res.body.should.have.status(403)
+                    res.body.should.has.property('message')
+                    res.body.should.has.property('data').to.be.empty;
                     done();
                 });
         });
         it('TC-206-4 Gebruiker succesvol verwijderd', (done) => {
             chai.request(server)
                 .delete('/api/user/18')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 18 }, jwtSecretKey))
                 .end((err, res) => {
                     //Deletes user
                     res.should.have.status(200);
@@ -482,6 +514,7 @@ describe('TC-20x - User', () => {
                     //Checks if user has been deleted
                     chai.request(server)
                         .get('/api/user/18')
+                        .set('Authorization', 'Bearer ' + jwt.sign({ userid: 18 }, jwtSecretKey))
                         .end((err, res) => {
                             res.should.have.status(404);
                             res.body.should.has.property('data').to.be.empty;
