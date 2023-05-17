@@ -134,14 +134,15 @@ describe('TC-20x - User', () => {
                     password: 'Pass1231Pa'
                 })
                 .end((err, res) => {
-                    res.body.should.has.property('status').to.be.equal(403);
-                    res.body.should.has.property('message');
-                    res.body.should.has.property('data').to.be.empty;
+                    res.body.should.be.an('object');
+                    res.body.should.have.property('status').to.be.equal(403);
+                    res.body.should.have.property('message').to.equal(`User with email ${user.emailAdress} already exists.`);
+                    res.body.should.have.property('data').to.deep.equal({});
                     done();
                 });
         });
         it('TC-201-5 Gebruiker succesvol geregistreerd', (done) => {
-            let createdUserId;
+
             chai.request(server)
                 .post('/api/user')
                 .send({

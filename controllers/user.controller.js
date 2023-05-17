@@ -114,7 +114,7 @@ const userController = {
                 conn.query(createUserSql, function(err, results, fields) {
                     if (err) {
                         if (err.code === 'ER_DUP_ENTRY') {
-                            res.status(403).json({
+                            return res.status(403).json({
                                 status: 403,
                                 message: `User with email ${user.emailAdress} already exists.`,
                                 data: {}
