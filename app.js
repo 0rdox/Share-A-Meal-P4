@@ -26,13 +26,13 @@ app.use('/api/login', loginRouter);
 //Console.logs methods when called
 app.use('*', (req, res, next) => {
     const method = req.method;
-    console.log('Method ' + $(method) + 'is called');
+    console.log(`Method ${method} is called`);
     next();
 })
 
 //GENERIC ERROR HANDLER
 app.use((err, req, res, next) => {
-    console.log(err.stack);
+    // console.log(err.stack);
     res.status(err.code).json({
         statusCode: err.code,
         message: err.message,

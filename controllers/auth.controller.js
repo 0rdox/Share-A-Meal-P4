@@ -30,7 +30,7 @@
                         }
 
                         if (results[0]) {
-                            console.log(results)
+
                             const user = results[0]
 
                             //CHECK IF PASSWORD IS CORRECT
@@ -39,7 +39,7 @@
                                 jwt.sign({ userid: user.id, emailAdress: user.emailAdress, password: user.password }, jwtSecretKey, { expiresIn: '7d' }, function(err, token) {
                                     if (err) console.log(err);
                                     if (token) {
-                                        console.log(token)
+
                                         res.status(200).json({
                                             status: 200,
                                             data: {...results[0], token }

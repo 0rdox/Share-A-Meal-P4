@@ -16,10 +16,7 @@ const userController = {
         const city = req.query.city;
         const street = req.query.street;
 
-
-
-        //FILTERS
-
+        // FILTERS
         let sql = 'SELECT * FROM `user` WHERE 1=1 ';
         if (Object.keys(req.query).length > 0) {
             if (firstName) {
@@ -40,36 +37,35 @@ const userController = {
             if (city) {
                 sql += `AND \`city\` = '${city}' `;
             }
-            //IF FILTERS DONT MATCH
+            // IF FILTERS DON'T MATCH
             if (!firstName && !lastName && !emailAdress && isActive === undefined && !city && !street) {
                 sql += 'AND 1=0 ';
             }
         }
 
-        //SQL CONNECTION
+        // SQL CONNECTION
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
                 next('error: ' + err.message);
+                return;
             }
-            if (conn) {
-                conn.query(sql, function(err, results, fields) {
-                    if (err) {
-                        next({
-                            code: 409,
-                            message: err.message
-                        });
-                    }
-                    if (results) {
-                        res.status(200).json({
-                            status: 200,
-                            message: 'User GetAll endpoint',
-                            data: results,
-                        })
-                    }
-                    conn.release();
+
+            conn.query(sql, function(err, results, fields) {
+                conn.release();
+                if (err) {
+                    next({
+                        code: 409,
+                        message: err.message
+                    });
+                }
+
+                res.status(200).json({
+                    status: 200,
+                    message: 'User GetAll endpoint',
+                    data: results,
                 });
-            }
+            });
         });
     },
     createUser: (req, res, next) => {

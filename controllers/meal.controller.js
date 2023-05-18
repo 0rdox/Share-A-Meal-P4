@@ -4,9 +4,19 @@ const pool = require('../utils/mysql-db');
 //TODO:
 //Createmeal works, uses the CookId from logged in user.
 //deletemeal works, if user is not the owner it can't be deleted
+//Getmeal dates return null
 
 const mealController = {
     createMeal: (req, res, next) => {
+        //CHECK IF LOGGED IN
+        if (!req.userId) {
+            res.status(401).json({
+                status: 401,
+                message: 'User is not logged in.',
+                data: {},
+            });
+            return;
+        }
 
         const meal = {
             id: req.body.id,
@@ -19,13 +29,11 @@ const mealController = {
             price: req.body.price,
             imageUrl: req.body.imageUrl,
             cookId: req.userId,
-            createDate: req.body.createDate || new Date(),
-            updateDate: req.body.updateDate || new Date(),
             name: req.body.name,
             description: req.body.description,
             allergenes: req.body.allergenes
         };
-        console.log(req.body);
+
 
         // ASSERT
         try {
