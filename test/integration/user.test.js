@@ -134,9 +134,9 @@ describe('TC-20x - User', () => {
                     password: 'Pass1231Pa'
                 })
                 .end((err, res) => {
-                    res.body.should.have.property('status').to.be.equal(403);
+                    res.body.should.have.status(403);
                     res.body.should.have.property('message').to.equal(`User with email m.vandullemen@server.nl already exists.`);
-                    res.body.should.have.property('data').to.deep.equal({});
+                    res.body.should.have.property('data').to.be.empty;
                     done();
                 });
         });
