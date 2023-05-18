@@ -8,14 +8,13 @@ const pool = require('../utils/mysql-db');
 
 const mealController = {
     createMeal: (req, res, next) => {
-        //CHECK IF LOGGED IN
+        // CHECK IF LOGGED IN
         if (!req.userId) {
-            res.status(401).json({
+            return res.status(401).json({
                 status: 401,
                 message: 'User is not logged in.',
                 data: {},
             });
-            return;
         }
 
         const meal = {
@@ -34,40 +33,39 @@ const mealController = {
             allergenes: req.body.allergenes
         };
 
-
         // ASSERT
         try {
             assert(typeof meal.name === 'string' && meal.name.trim() !== '', 'Meal name must be a non-empty string');
             assert(typeof meal.price === 'string', "Meal price must be a non-empty string");
         } catch (err) {
             // STATUS ERROR
-            res.status(400).json({
+            return res.status(400).json({
                 status: 400,
                 message: err.message.toString(),
                 data: {},
             });
-            return;
         }
+
         const createMealSql = `INSERT INTO \`meal\` (\`id\`,\`isActive\`, \`isVega\`, \`isVegan\`, \`isToTakeHome\`, \`dateTime\`, \`maxAmountOfParticipants\`, \`price\`, \`imageUrl\`, \`cookId\`, \`createDate\`, \`updateDate\`, \`name\`, \`description\`, \`allergenes\`) 
-        VALUES ('${meal.id}','${meal.isActive}', '${meal.isVega}', '${meal.isVegan}', '${meal.isToTakeHome}', '${meal.dateTime}', '${meal.maxAmountOfParticipants}', '${meal.price}', '${meal.imageUrl}', '${meal.cookId}', '${meal.createDate}', '${meal.updateDate}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`;
+              VALUES ('${meal.id}','${meal.isActive}', '${meal.isVega}', '${meal.isVegan}', '${meal.isToTakeHome}', '${meal.dateTime}', '${meal.maxAmountOfParticipants}', '${meal.price}', '${meal.imageUrl}', '${meal.cookId}', '${meal.createDate}', '${meal.updateDate}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`;
 
         // SQL
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
-                next('error: ' + err.message);
+                return next('error: ' + err.message);
             }
             if (conn) {
                 conn.query(createMealSql, function(err, results, fields) {
                     if (err) {
                         if (err.code === 'ER_DUP_ENTRY') {
-                            res.status(403).json({
+                            return res.status(403).json({
                                 status: 403,
                                 message: `Meal with ID ${meal.id} already exists.`,
                                 data: {}
                             });
                         } else {
-                            next({
+                            return next({
                                 status: 409,
                                 message: err.message
                             });
@@ -75,7 +73,7 @@ const mealController = {
                     } else {
                         const mealId = results.insertId;
                         meal.id = mealId;
-                        res.status(201).json({
+                        return res.status(201).json({
                             status: 201,
                             message: `${meal.name} has been created`,
                             data: meal
@@ -86,6 +84,7 @@ const mealController = {
             }
         });
     },
+
     getAllMeals: (req, res, next) => {
         let sql = 'SELECT * FROM `meal` WHERE 1=1 ';
 
