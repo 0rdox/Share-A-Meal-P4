@@ -15,6 +15,7 @@ const userController = {
         const isActive = req.query.isActive;
         const city = req.query.city;
         const street = req.query.street;
+        const phoneNumber = req.query.phoneNumber;
 
         // FILTERS
         let sql = 'SELECT * FROM `user` WHERE 1=1 ';
@@ -37,8 +38,11 @@ const userController = {
             if (city) {
                 sql += `AND \`city\` = '${city}' `;
             }
+            if (phoneNumber) {
+                sql += ` AND \`phoneNumber\` = '${phoneNumber}'`;
+            }
             // IF FILTERS DON'T MATCH
-            if (!firstName && !lastName && !emailAdress && isActive === undefined && !city && !street) {
+            if (!firstName && !lastName && !emailAdress && isActive === undefined && !city && !street && !phoneNumber) {
                 sql += 'AND 1=0 ';
             }
         }
@@ -172,6 +176,7 @@ const userController = {
         });
     },
     getUserId: (req, res, next) => {
+
         const userId = parseInt(req.params.userid);
         pool.getConnection(function(err, conn) {
             if (err) {
@@ -219,6 +224,14 @@ const userController = {
     updateUserId: (req, res, next) => {
         const userId = parseInt(req.params.userid);
 
+        if (!req.headers.authorization) {
+            return res.status(401).json({
+                status: 401,
+                message: "Unauthorized",
+                data: {}
+            });
+        }
+
         // VERIFY TOKEN
         if (userId != req.userId) {
             return res.status(403).json({
@@ -227,6 +240,7 @@ const userController = {
                 data: {}
             });
         }
+
 
         const userEmail = req.body.emailAdress;
 

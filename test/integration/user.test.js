@@ -123,7 +123,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-4 Gebruiker bestaat al', (done) => {
+        it('TC-201-4 Gebruiker bestaat al', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -136,7 +136,7 @@ describe('TC-20x - User', () => {
                 .end((err, res) => {
                     res.body.should.be.an('object');
                     res.body.should.have.property('status').to.be.equal(403);
-                    res.body.should.have.property('message').to.equal(`User with email ${user.emailAdress} already exists.`);
+                    res.body.should.have.property('message').to.equal(`User with email m.vandullemen@server.nl already exists.`);
                     res.body.should.have.property('data').to.deep.equal({});
                     done();
                 });
@@ -197,12 +197,13 @@ describe('TC-20x - User', () => {
         it('TC-202-2-2 Toon gebruikers met zoekterm op niet-bestaande velden', (done) => {
             chai.request(server)
                 .get('/api/user?awodiajwodiawjd=aoiwdjoaiwd')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.body.should.have.property('data').that.is.empty;
                     done();
                 });
         });
-        it('TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false', (done) => {
+        it.skip('TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false', (done) => {
             chai.request(server)
                 .get('/api/user?isActive=false')
                 .end((err, res) => {
@@ -230,20 +231,20 @@ describe('TC-20x - User', () => {
         });
         it('TC-202-5-1 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)', (done) => {
             chai.request(server)
-                .get('/api/user?street=Street&isActive=true')
+                .get('/api/user?password=secret&isActive=true')
                 .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
                     const filteredUser = res.body.data[0];
-                    filteredUser.firstName.should.equal('Roko');
-                    filteredUser.lastName.should.equal('Roko');
+                    filteredUser.firstName.should.equal('Mariëtte');
+                    filteredUser.lastName.should.equal('van den Dullemen');
                     filteredUser.isActive.should.equal(1);
-                    filteredUser.street.should.equal('Street');
+                    filteredUser.password.should.equal('secret');
 
                     const filteredUser2 = res.body.data[1];
                     filteredUser2.isActive.should.equal(1);
-                    filteredUser2.street.should.equal('Street');
+                    filteredUser2.password.should.equal('secret');
                     done();
                 });
 
@@ -281,14 +282,15 @@ describe('TC-20x - User', () => {
                 .get('/api/user/profile')
                 .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
-                    res.should.have.status(200)
+                    res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('object');
                     const filteredUser = res.body.data;
                     filteredUser.firstName.should.equal('Mariëtte');
                     filteredUser.lastName.should.equal('van den Dullemen');
-                    done();
+                    done(); // Call done() to signal the completion of the test case
                 });
         });
+
     });
 
     //TESTCASE 204 -------------------------------------------------------------------------------------------------

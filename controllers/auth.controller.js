@@ -8,7 +8,7 @@
             let { emailAdress, password } = req.body
             if (!emailAdress || !password) {
                 next({
-                    code: 404,
+                    status: 404,
                     message: 'Missing EmailAddress or Password',
                 })
             }
@@ -24,7 +24,7 @@
                     conn.query(sql, [emailAdress], function(err, results, fields) {
                         if (err) {
                             next({
-                                code: 409,
+                                status: 409,
                                 message: err.message
                             });
                         }
@@ -49,7 +49,7 @@
 
                             } else {
                                 next({
-                                    code: 400,
+                                    status: 400,
                                     message: 'Email and password dont match',
                                 })
                             }
@@ -86,34 +86,40 @@
         validateToken: (req, res, next) => {
             const authHeader = req.headers.authorization;
             if (!authHeader) {
-                next({
-                    code: 401,
+                return res.status(401).json({
+                    status: 401,
                     message: 'Authorization header missing!',
-                    data: undefined
-                });
-            } else {
-                //Remove 'Bearer'
-                const token = authHeader.substring(7, authHeader.length);
-
-
-                jwt.verify(token, jwtSecretKey, (err, payload) => {
-                    if (err) {
-                        res.status(401).json({
-                            code: 401,
-                            message: err.message,
-                            data: {}
-                        });
-                    }
-                    if (payload) {
-                        req.userId = payload.userid;
-                        req.emailAdress = payload.emailAdress;
-                        req.password = payload.password;
-                        next();
-                    }
-
+                    data: {}
                 });
             }
+
+            // Remove 'Bearer'
+            const token = authHeader.substring(7, authHeader.length);
+
+            jwt.verify(token, jwtSecretKey, (err, payload) => {
+                if (err) {
+                    return res.status(401).json({
+                        status: 401,
+                        message: err.message,
+                        data: {}
+                    });
+                }
+
+                if (!payload) {
+                    return res.status(401).json({
+                        status: 401,
+                        message: 'Invalid token',
+                        data: {}
+                    });
+                }
+
+                req.userId = payload.userid;
+                req.emailAdress = payload.emailAdress;
+                req.password = payload.password;
+                next();
+            });
         }
+
     }
 
 
