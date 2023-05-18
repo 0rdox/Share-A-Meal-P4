@@ -123,7 +123,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-201-4 Gebruiker bestaat al', (done) => {
+        it('TC-201-4 Gebruiker bestaat al', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -202,9 +202,10 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it.skip('TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false', (done) => {
+        it('TC-202-3 Toon gebruikers met gebruik van de zoekterm op het veld ‘isActive’=false', (done) => {
             chai.request(server)
                 .get('/api/user?isActive=false')
+                .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('data').that.is.an('array').with.length.gte(2);
@@ -248,7 +249,7 @@ describe('TC-20x - User', () => {
                 });
 
         });
-        it.skip('TC-202-5-2 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)', (done) => {
+        it('TC-202-5-2 Toon gebruikers met zoektermen op bestaande velden (max op 2 velden filteren)', (done) => {
             chai.request(server)
                 .get('/api/user?firstName=John')
                 .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))

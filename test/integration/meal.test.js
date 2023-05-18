@@ -77,7 +77,7 @@ describe('TC-30x - Meal', () => {
                     allergenes: ""
                 })
                 .end((err, res) => {
-                    //
+                    console.log(res.body)
                     res.body.should.has.status(201);
                     res.body.should.has.property('message');
                     res.body.should.has.property('data')
