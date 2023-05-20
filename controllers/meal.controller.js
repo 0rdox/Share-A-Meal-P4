@@ -38,7 +38,6 @@ const mealController = {
         // ASSERT
         try {
             assert(typeof meal.name === 'string' && meal.name.trim() !== '', 'Meal name must be a non-empty string');
-            // assert(typeof meal.price === 'double', "Meal price must be a non-empty double");
         } catch (err) {
             // STATUS ERROR
             return res.status(400).json({
@@ -48,8 +47,13 @@ const mealController = {
             });
         }
 
-        const createMealSql = `INSERT INTO \`meal\` (\`id\`,\`isActive\`, \`isVega\`, \`isVegan\`, \`isToTakeHome\`, \`dateTime\`, \`maxAmountOfParticipants\`, \`price\`, \`imageUrl\`, \`cookId\`, \`createDate\`, \`updateDate\`, \`name\`, \`description\`, \`allergenes\`) 
-              VALUES ('${meal.id}','${meal.isActive}', '${meal.isVega}', '${meal.isVegan}', '${meal.isToTakeHome}', '${meal.dateTime}', '${meal.maxAmountOfParticipants}', '${meal.price}', '${meal.imageUrl}', '${meal.cookId}', '${meal.createDate}', '${meal.updateDate}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`;
+        // SQL ESCAPE
+        const escapedName = meal.name.replace(/'/g, "''");
+        const escapedDescription = meal.description.replace(/'/g, "''");
+        const escapedAllergenes = meal.allergenes.replace(/'/g, "''");
+
+        const createMealSql = `INSERT INTO \`meal\` (\`id\`, \`isActive\`, \`isVega\`, \`isVegan\`, \`isToTakeHome\`, \`dateTime\`, \`maxAmountOfParticipants\`, \`price\`, \`imageUrl\`, \`cookId\`, \`createDate\`, \`updateDate\`, \`name\`, \`description\`, \`allergenes\`) 
+            VALUES ('${meal.id}', ${meal.isActive}, ${meal.isVega}, ${meal.isVegan}, ${meal.isToTakeHome}, '${meal.dateTime}', ${meal.maxAmountOfParticipants}, ${meal.price}, '${meal.imageUrl}', ${meal.cookId}, '${meal.createDate}', '${meal.updateDate}', '${escapedName}', '${escapedDescription}', '${escapedAllergenes}')`;
 
         // SQL
         pool.getConnection(function(err, conn) {
@@ -59,6 +63,7 @@ const mealController = {
             }
             if (conn) {
                 conn.query(createMealSql, function(err, results, fields) {
+                    conn.release();
                     if (err) {
                         if (err.code === 'ER_DUP_ENTRY') {
                             return res.status(403).json({
@@ -81,11 +86,10 @@ const mealController = {
                             data: meal
                         });
                     }
-                    conn.release();
                 });
             }
         });
-    },
+    }
     getAllMeals: (req, res, next) => {
         let sql = 'SELECT * FROM `meal` WHERE 1=1 ';
 
