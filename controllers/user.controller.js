@@ -75,7 +75,7 @@ const userController = {
     createUser: (req, res, next) => {
 
         const user = {
-            id: req.body.id,
+            id: req.body.id || null,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             street: req.body.street,
@@ -95,7 +95,7 @@ const userController = {
             assert(typeof user.phoneNumber === 'string' && validatePhoneNumber(user.phoneNumber), 'Phone number must be a valid phone number');
         } catch (err) {
             //STATUS ERROR
-            res.status(400).json({
+            return res.status(400).json({
                 status: 400,
                 message: err.message.toString(),
                 data: {},
