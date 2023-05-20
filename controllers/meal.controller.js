@@ -38,7 +38,7 @@ const mealController = {
         // ASSERT
         try {
             assert(typeof meal.name === 'string' && meal.name.trim() !== '', 'Meal name must be a non-empty string');
-            assert(typeof meal.price === 'string', "Meal price must be a non-empty string");
+            assert(typeof meal.price === 'double', "Meal price must be a non-empty double");
         } catch (err) {
             // STATUS ERROR
             return res.status(400).json({
