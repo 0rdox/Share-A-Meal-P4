@@ -74,16 +74,29 @@ const userController = {
     },
     createUser: (req, res, next) => {
 
-        const user = {
-            id: req.body.id || null,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            street: req.body.street,
-            city: req.body.city,
-            isActive: req.body.isActive === undefined ? true : req.body.isActive,
-            emailAdress: req.body.emailAdress,
-            phoneNumber: req.body.phoneNumber,
-            password: req.body.password,
+        if (!req.body.id) {
+            const user = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                street: req.body.street,
+                city: req.body.city,
+                isActive: req.body.isActive === undefined ? true : req.body.isActive,
+                emailAdress: req.body.emailAdress,
+                phoneNumber: req.body.phoneNumber,
+                password: req.body.password,
+            }
+        } else {
+            const user = {
+                id: req.body.id,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                street: req.body.street,
+                city: req.body.city,
+                isActive: req.body.isActive === undefined ? true : req.body.isActive,
+                emailAdress: req.body.emailAdress,
+                phoneNumber: req.body.phoneNumber,
+                password: req.body.password,
+            }
         }
 
         //ASSERT
