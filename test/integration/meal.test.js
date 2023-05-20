@@ -80,6 +80,11 @@ describe('TC-30x - Meal', () => {
                     allergenes: ""
                 })
                 .end((err, res) => {
+                    if (err) {
+                        console.log(err); // Log the error for debugging purposes
+                        done(err); // Pass the error to the test runner
+                        return;
+                    }
                     console.log(res.body)
                     res.body.should.has.status(201);
                     res.body.should.has.property('message');
