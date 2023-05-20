@@ -10,7 +10,6 @@ const authController = require('../controllers/auth.controller');
 router.post('/', authController.validateToken, mealController.createMeal)
 
 //UC-302 Wijzigen van maaltijdgegevens
-//token + eigenaar van maaltijd
 router.put('/:mealid', authController.validateToken, mealController.updateMeal)
 
 //UC-303 Opvragen van alle maaltijden

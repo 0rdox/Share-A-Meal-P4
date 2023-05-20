@@ -14,6 +14,7 @@ var usersRouter = require('./routes/user');
 var infoRouter = require('./routes/info');
 var mealRouter = require('./routes/meal');
 var loginRouter = require('./routes/login');
+var signUpRouter = require("./routes/signup")
 
 //Link .js with routes
 app.use('/', indexRouter);
@@ -21,6 +22,7 @@ app.use('/api/user', usersRouter);
 app.use('/api/info', infoRouter);
 app.use('/api/meal', mealRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/meal', signUpRouter)
 
 
 //Console.logs methods when called

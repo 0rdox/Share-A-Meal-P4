@@ -7,11 +7,13 @@
         login: (req, res, next) => {
             let { emailAdress, password } = req.body
             if (!emailAdress || !password) {
-                next({
-                    status: 404,
+                return res.status(400).json({
+                    status: 400,
                     message: 'Missing EmailAddress or Password',
+                    data: {}
                 })
             }
+
 
             const sql = 'SELECT id, firstName, lastName, emailAdress, password FROM user WHERE emailAdress = ?';
             //SQL CONNECTION
@@ -25,7 +27,8 @@
                         if (err) {
                             next({
                                 status: 409,
-                                message: err.message
+                                message: err.message,
+                                data: {}
                             });
                         }
 
@@ -39,24 +42,26 @@
                                 jwt.sign({ userid: user.id, emailAdress: user.emailAdress, password: user.password }, jwtSecretKey, { expiresIn: '7d' }, function(err, token) {
                                     if (err) console.log(err);
                                     if (token) {
-
-                                        res.status(200).json({
+                                        return res.status(200).json({
                                             status: 200,
+                                            message: "Succesfully logged in",
                                             data: {...results[0], token }
                                         })
                                     };
                                 });
 
                             } else {
-                                next({
+                                return res.status(400).json({
                                     status: 400,
-                                    message: 'Email and password dont match',
+                                    message: 'Email or password incorrect',
+                                    data: {}
                                 })
                             }
                         } else {
                             res.status(404).json({
                                 status: 404,
-                                message: `User with email: ${emailAdress} not found`
+                                message: `User with email: ${emailAdress} not found`,
+                                data: {}
                             })
                         }
                         conn.release();
@@ -85,7 +90,9 @@
         },
         validateToken: (req, res, next) => {
             const authHeader = req.headers.authorization;
+
             if (!authHeader) {
+
                 return res.status(401).json({
                     status: 401,
                     message: 'Authorization header missing!',
@@ -98,6 +105,7 @@
 
             jwt.verify(token, jwtSecretKey, (err, payload) => {
                 if (err) {
+
                     return res.status(401).json({
                         status: 401,
                         message: err.message,

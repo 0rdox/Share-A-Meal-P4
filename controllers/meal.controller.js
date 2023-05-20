@@ -26,6 +26,8 @@ const mealController = {
             dateTime: new Date(),
             maxAmountOfParticipants: req.body.maxAmountOfParticipants,
             price: req.body.price,
+            createDate: new Date(),
+            updateDate: new Date(),
             imageUrl: req.body.imageUrl,
             cookId: req.userId,
             name: req.body.name,
@@ -84,7 +86,6 @@ const mealController = {
             }
         });
     },
-
     getAllMeals: (req, res, next) => {
         let sql = 'SELECT * FROM `meal` WHERE 1=1 ';
 
@@ -180,8 +181,98 @@ const mealController = {
             }
         });
     },
-    //Extra
-    updateMeal: (req, res, next) => {},
+    updateMeal: (req, res, next) => {
+        const mealId = parseInt(req.params.mealid);
+
+        // SELECT MEAL SQL
+        const selectMealSql = `SELECT cookId FROM \`meal\` WHERE \`id\` = ${mealId}`;
+
+        pool.getConnection((err, conn) => {
+            if (err) {
+                console.log('error', err);
+                return next('error: ' + err.message);
+            }
+
+            conn.query(selectMealSql, (err, results, fields) => {
+                if (err) {
+                    conn.release();
+                    return next({
+                        status: 500,
+                        message: err.message,
+                    });
+                }
+
+                if (results.length === 0) {
+                    conn.release();
+                    return res.status(404).json({
+                        status: 404,
+                        message: `Meal with id ${mealId} not found`,
+                        data: {},
+                    });
+                }
+
+                const cookId = results[0].cookId;
+
+                // VERIFY OWNER
+                if (cookId != req.userId) {
+                    conn.release();
+                    return res.status(403).json({
+                        status: 403,
+                        message: "User is not the owner of this data",
+                        data: {},
+                    });
+                }
+
+                // CHECK MANDATORY UPDATE PARAMETERS
+                if (!req.body.name || !req.body.price || !req.body.maxAmountOfParticipants) {
+                    conn.release();
+                    return res.status(400).json({
+                        status: 400,
+                        message: 'Name, price, and maxAmountOfParticipants are required',
+                        data: {},
+                    });
+                }
+
+                //SETTING VALUES FOR UPDATED MEAL
+                const meal = results[0];
+                meal.isActive = req.body.isActive || meal.isActive;
+                meal.isVega = req.body.isVega || meal.isVega;
+                meal.isVegan = req.body.isVegan || meal.isVegan;
+                meal.isToTakeHome = req.body.isToTakeHome || meal.isToTakeHome;
+                meal.dateTime = req.body.dateTime || meal.dateTime;
+                meal.maxAmountOfParticipants = req.body.maxAmountOfParticipants || meal.maxAmountOfParticipants;
+                meal.price = req.body.price || meal.price;
+                meal.imageUrl = req.body.imageUrl || meal.imageUrl;
+                meal.createDate = req.body.createDate || meal.createDate;
+                meal.updateDate = req.body.updateDate || meal.updateDate;
+                meal.name = req.body.name || meal.name;
+                meal.description = req.body.description || meal.description;
+                meal.allergenes = req.body.allergenes || meal.allergenes;
+
+
+                // UPDATE MEAL SQL
+                const updateMealSql = `UPDATE \`meal\` SET \`isActive\`='${meal.isActive}', \`isVega\`='${meal.isVega}', \`isVegan\`='${meal.isVegan}', \`isToTakeHome\`='${meal.isToTakeHome}', \`dateTime\`='${meal.dateTime}', \`maxAmountOfParticipants\`='${meal.maxAmountOfParticipants}', \`price\`='${meal.price}', \`imageUrl\`='${meal.imageUrl}', \`createDate\`='${meal.createDate}', \`updateDate\`='${meal.updateDate}', \`name\`='${meal.name}', \`description\`='${meal.description}', \`allergenes\`='${meal.allergenes}' WHERE \`id\`=${mealId}`;
+
+                conn.query(updateMealSql, (err, results, fields) => {
+                    conn.release();
+
+                    if (err) {
+                        return next({
+                            status: 500,
+                            message: err.message,
+                        });
+                    }
+
+                    res.status(200).json({
+                        status: 200,
+                        message: `${meal.name} (${mealId}) has been updated`,
+                        data: meal,
+                    });
+                });
+            });
+        });
+    },
+
     deleteMeal: (req, res, next) => {
         const mealId = parseInt(req.params.mealid);
 
