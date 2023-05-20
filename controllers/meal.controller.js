@@ -19,11 +19,11 @@ const mealController = {
 
         const meal = {
             id: req.body.id,
-            isActive: req.body.isActive === undefined ? true : req.body.isActive,
-            isVega: req.body.isVega === undefined ? false : req.body.isVega,
-            isVegan: req.body.isVegan === undefined ? false : req.body.isVegan,
-            isToTakeHome: req.body.isToTakeHome === undefined ? true : req.body.isToTakeHome,
-            dateTime: new Date(),
+            isActive: req.body.isActive === undefined ? 1 : req.body.isActive,
+            isVega: req.body.isVega === undefined ? 0 : req.body.isVega,
+            isVegan: req.body.isVegan === undefined ? 0 : req.body.isVegan,
+            isToTakeHome: req.body.isToTakeHome === undefined ? 0 : req.body.isToTakeHome,
+            dateTime: new Date(req.body.dateTime),
             maxAmountOfParticipants: req.body.maxAmountOfParticipants,
             price: req.body.price,
             createDate: new Date(),
@@ -32,13 +32,13 @@ const mealController = {
             cookId: req.userId,
             name: req.body.name,
             description: req.body.description,
-            allergenes: req.body.allergenes
+            allergenes: req.body.allergenes,
         };
 
         // ASSERT
         try {
             assert(typeof meal.name === 'string' && meal.name.trim() !== '', 'Meal name must be a non-empty string');
-            assert(typeof meal.price === 'string', "Meal price must be a non-empty string");
+            assert(typeof meal.price === 'string', 'Meal price must be a string');
         } catch (err) {
             // STATUS ERROR
             return res.status(400).json({
@@ -48,8 +48,8 @@ const mealController = {
             });
         }
 
-        const createMealSql = `INSERT INTO \`meal\` (\`id\`,\`isActive\`, \`isVega\`, \`isVegan\`, \`isToTakeHome\`, \`dateTime\`, \`maxAmountOfParticipants\`, \`price\`, \`imageUrl\`, \`cookId\`, \`createDate\`, \`updateDate\`, \`name\`, \`description\`, \`allergenes\`) 
-              VALUES ('${meal.id}','${meal.isActive}', '${meal.isVega}', '${meal.isVegan}', '${meal.isToTakeHome}', '${meal.dateTime}', '${meal.maxAmountOfParticipants}', '${meal.price}', '${meal.imageUrl}', '${meal.cookId}', '${meal.createDate}', '${meal.updateDate}', '${meal.name}', '${meal.description}', '${meal.allergenes}')`;
+        const createMealSql = `INSERT INTO \`meal\` (\`id\`, \`isActive\`, \`isVega\`, \`isVegan\`, \`isToTakeHome\`, \`dateTime\`, \`maxAmountOfParticipants\`, \`price\`, \`imageUrl\`, \`cookId\`, \`createDate\`, \`updateDate\`, \`name\`, \`description\`, \`allergenes\`) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         // SQL
         pool.getConnection(function(err, conn) {
@@ -58,18 +58,18 @@ const mealController = {
                 return next('error: ' + err.message);
             }
             if (conn) {
-                conn.query(createMealSql, function(err, results, fields) {
+                conn.query(createMealSql, Object.values(meal), function(err, results, fields) {
                     if (err) {
                         if (err.code === 'ER_DUP_ENTRY') {
                             return res.status(403).json({
                                 status: 403,
                                 message: `Meal with ID ${meal.id} already exists.`,
-                                data: {}
+                                data: {},
                             });
                         } else {
                             return next({
                                 status: 409,
-                                message: err.message
+                                message: err.message,
                             });
                         }
                     } else {
@@ -78,7 +78,7 @@ const mealController = {
                         return res.status(201).json({
                             status: 201,
                             message: `${meal.name} has been created`,
-                            data: meal
+                            data: meal,
                         });
                     }
                     conn.release();
@@ -86,6 +86,7 @@ const mealController = {
             }
         });
     },
+
     getAllMeals: (req, res, next) => {
         let sql = 'SELECT * FROM `meal` WHERE 1=1 ';
 

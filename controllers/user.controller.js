@@ -74,7 +74,7 @@ const userController = {
     },
     createUser: (req, res, next) => {
 
-        let user; // Declare the user variable outside the if statement
+        let user;
 
         if (!req.body.id) {
             user = {
