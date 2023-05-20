@@ -61,7 +61,7 @@ describe('TC-30x - Meal', () => {
                     done();
                 });
         });
-        it.only('TC-301-3 Maaltijd succesvol toegevoegd', (done) => {
+        it('TC-301-3 Maaltijd succesvol toegevoegd', (done) => {
             chai.request(server)
                 .post('/api/meal')
                 .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
@@ -276,7 +276,7 @@ describe('TC-30x - Meal', () => {
                     done();
                 });
         })
-        it.only('TC-305-4 Maaltijd succesvol verwijderd', (done) => {
+        it('TC-305-4 Maaltijd succesvol verwijderd', (done) => {
             chai.request(server)
                 .delete('/api/meal/21')
                 .set('Authorization', 'Bearer ' + jwt.sign({ userid: 1 }, jwtSecretKey))
