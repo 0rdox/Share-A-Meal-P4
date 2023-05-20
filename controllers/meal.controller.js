@@ -233,25 +233,34 @@ const mealController = {
                     });
                 }
 
-                //SETTING VALUES FOR UPDATED MEAL
-                const meal = results[0];
-                meal.isActive = req.body.isActive || meal.isActive;
-                meal.isVega = req.body.isVega || meal.isVega;
-                meal.isVegan = req.body.isVegan || meal.isVegan;
-                meal.isToTakeHome = req.body.isToTakeHome || meal.isToTakeHome;
-                meal.dateTime = req.body.dateTime || meal.dateTime;
-                meal.maxAmountOfParticipants = req.body.maxAmountOfParticipants || meal.maxAmountOfParticipants;
-                meal.price = req.body.price || meal.price;
-                meal.imageUrl = req.body.imageUrl || meal.imageUrl;
-                meal.createDate = req.body.createDate || meal.createDate;
-                meal.updateDate = req.body.updateDate || meal.updateDate;
-                meal.name = req.body.name || meal.name;
-                meal.description = req.body.description || meal.description;
-                meal.allergenes = req.body.allergenes || meal.allergenes;
+                // //SETTING VALUES FOR UPDATED MEAL
+                // const meal = results[0];
+                // meal.isActive = req.body.isActive || meal.isActive;
+                // meal.isVega = req.body.isVega || meal.isVega;
+                // meal.isVegan = req.body.isVegan || meal.isVegan;
+                // meal.isToTakeHome = req.body.isToTakeHome || meal.isToTakeHome;
+                // meal.dateTime = req.body.dateTime || meal.dateTime;
+                // meal.maxAmountOfParticipants = req.body.maxAmountOfParticipants || meal.maxAmountOfParticipants;
+                // meal.price = req.body.price || meal.price;
+                // meal.imageUrl = req.body.imageUrl || meal.imageUrl;
+                // meal.createDate = req.body.createDate || meal.createDate;
+                // meal.updateDate = req.body.updateDate || meal.updateDate;
+                // meal.name = req.body.name || meal.name;
+                // meal.description = req.body.description || meal.description;
+                // meal.allergenes = req.body.allergenes || meal.allergenes;
 
+
+                // // UPDATE MEAL SQL
+                // const updateMealSql = `UPDATE \`meal\` SET \`isActive\`='${meal.isActive}', \`isVega\`='${meal.isVega}', \`isVegan\`='${meal.isVegan}', \`isToTakeHome\`='${meal.isToTakeHome}', \`dateTime\`='${meal.dateTime}', \`maxAmountOfParticipants\`='${meal.maxAmountOfParticipants}', \`price\`='${meal.price}', \`imageUrl\`='${meal.imageUrl}', \`createDate\`='${meal.createDate}', \`updateDate\`='${meal.updateDate}', \`name\`='${meal.name}', \`description\`='${meal.description}', \`allergenes\`='${meal.allergenes}' WHERE \`id\`=${mealId}`;
+
+                const meal = {
+                    price: req.body.price,
+                    name: req.body.name,
+                    maxAmountOfParticipants: req.body.maxAmountOfParticipants
+                };
 
                 // UPDATE MEAL SQL
-                const updateMealSql = `UPDATE \`meal\` SET \`isActive\`='${meal.isActive}', \`isVega\`='${meal.isVega}', \`isVegan\`='${meal.isVegan}', \`isToTakeHome\`='${meal.isToTakeHome}', \`dateTime\`='${meal.dateTime}', \`maxAmountOfParticipants\`='${meal.maxAmountOfParticipants}', \`price\`='${meal.price}', \`imageUrl\`='${meal.imageUrl}', \`createDate\`='${meal.createDate}', \`updateDate\`='${meal.updateDate}', \`name\`='${meal.name}', \`description\`='${meal.description}', \`allergenes\`='${meal.allergenes}' WHERE \`id\`=${mealId}`;
+                const updateMealSql = `UPDATE \`meal\` SET \`price\`='${meal.price}', \`name\`='${meal.name}', \`maxAmountOfParticipants\`='${meal.maxAmountOfParticipants}' WHERE \`id\`=${mealId}`;
 
                 conn.query(updateMealSql, (err, results, fields) => {
                     conn.release();
