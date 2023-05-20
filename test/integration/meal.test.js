@@ -85,13 +85,22 @@ describe('TC-30x - Meal', () => {
                         done(err); // Pass the error to the test runner
                         return;
                     }
-                    console.log(res.body)
-                    res.body.should.has.status(201);
-                    res.body.should.has.property('message');
-                    res.body.should.has.property('data')
+                    console.log(res.text); // Log the response body as text
+                    try {
+                        const body = JSON.parse(res.text);
+                        console.log(body);
+                        res.should.have.status(201);
+                        res.body.should.have.property('message');
+                        res.body.should.have.property('data');
+                    } catch (parseError) {
+                        console.log(parseError); // Log any JSON parsing errors
+                        done(parseError); // Pass the error to the test runner
+                        return;
+                    }
                     done();
                 });
-        })
+        });
+
 
 
     })
