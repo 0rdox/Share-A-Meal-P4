@@ -101,7 +101,6 @@ const userController = {
             };
         }
 
-        // The rest of your code...
 
         //ASSERT
         try {
@@ -117,8 +116,8 @@ const userController = {
                 message: err.message.toString(),
                 data: {},
             });
-            return;
         }
+
         pool.getConnection(function(err, conn) {
             if (err) {
                 console.log('error', err);
