@@ -37,7 +37,6 @@ const signUpController = {
                             status: 500,
                             message: err.message,
                         });
-                        return;
                     }
                     if (results.length === 0) {
                         res.status(404).json({
@@ -81,8 +80,47 @@ const signUpController = {
         });
     },
     getParticipantById: (req, res, next) => {
+        // GET PARTICIPANT ID
+        const participantId = req.params.participantid;
 
-    }
+        // SQL FOR GETTING PARTICIPANT BY ID
+        const getParticipantSql = `SELECT * FROM \`user\` WHERE \`id\`= ${participantId}`;
+
+        // CONNECTION
+        pool.getConnection(function(err, conn) {
+            if (err) {
+                console.log('error', err);
+                next('error: ' + err.message);
+                return;
+            }
+            if (conn) {
+                conn.query(getParticipantSql, function(err, results, fields) {
+                    if (err) {
+                        next({
+                            status: 500,
+                            message: err.message,
+                        });
+                        return;
+                    }
+                    if (results.length === 0) {
+                        res.status(404).json({
+                            status: 404,
+                            message: `Participant with id ${participantId} not found`,
+                            data: {}
+                        });
+                        return;
+                    }
+
+                    res.status(200).json({
+                        status: 200,
+                        message: "Participant details",
+                        data: results[0]
+                    });
+                });
+            }
+        });
+    },
+
 
 }
 
