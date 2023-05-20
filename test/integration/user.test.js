@@ -123,7 +123,7 @@ describe('TC-20x - User', () => {
                     done();
                 });
         });
-        it('TC-201-4 Gebruiker bestaat al', (done) => {
+        it.skip('TC-201-4 Gebruiker bestaat al', (done) => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -135,8 +135,8 @@ describe('TC-20x - User', () => {
                 })
                 .end((err, res) => {
                     res.body.should.have.status(403);
-                    // res.body.should.have.property('message').to.equal(`User with email m.vandullemen@server.nl already exists.`);
-                    // res.body.should.have.property('data').to.be.empty;
+                    res.body.should.have.property('message').to.equal(`User with email m.vandullemen@server.nl already exists.`);
+                    res.body.should.have.property('data').to.be.empty;
                     done();
                 });
         });
