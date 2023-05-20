@@ -74,8 +74,10 @@ const userController = {
     },
     createUser: (req, res, next) => {
 
+        let user; // Declare the user variable outside the if statement
+
         if (!req.body.id) {
-            const user = {
+            user = {
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
                 street: req.body.street,
@@ -84,9 +86,9 @@ const userController = {
                 emailAdress: req.body.emailAdress,
                 phoneNumber: req.body.phoneNumber,
                 password: req.body.password,
-            }
+            };
         } else {
-            const user = {
+            user = {
                 id: req.body.id,
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
@@ -96,8 +98,11 @@ const userController = {
                 emailAdress: req.body.emailAdress,
                 phoneNumber: req.body.phoneNumber,
                 password: req.body.password,
-            }
+            };
         }
+
+        // The rest of your code...
+
 
         //ASSERT
         try {

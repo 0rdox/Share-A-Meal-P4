@@ -141,7 +141,6 @@ describe('TC-20x - User', () => {
                 });
         });
         it('TC-201-5 Gebruiker succesvol geregistreerd', (done) => {
-
             chai.request(server)
                 .post('/api/user')
                 .send({
