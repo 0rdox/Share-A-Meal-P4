@@ -89,7 +89,7 @@ const mealController = {
                 });
             }
         });
-    }
+    },
     getAllMeals: (req, res, next) => {
         let sql = 'SELECT * FROM `meal` WHERE 1=1 ';
 
