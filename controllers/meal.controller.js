@@ -256,17 +256,11 @@ const mealController = {
                 const meal = {
                     price: req.body.price,
                     name: req.body.name,
-                    maxAmountOfParticipants: req.body.maxAmountOfParticipants,
-                    description: req.body.description,
-                    isActive: req.body.isActive || meal.isActive,
-                    isVega: req.body.isVega || meal.isVega,
-                    isVegan: req.body.isVegan || meal.isVegan,
-                    isToTakeHome: req.body.isToTakeHome || meal.isToTakeHome
+                    maxAmountOfParticipants: req.body.maxAmountOfParticipants
                 };
 
                 // UPDATE MEAL SQL
-                const updateMealSql = `UPDATE \`meal\` SET \`price\`='${meal.price}', \`name\`='${meal.name}', \`maxAmountOfParticipants\`='${meal.maxAmountOfParticipants}', \`description\`='${meal.description}', \`isActive\`='${meal.isActive}', \`isVega\`='${meal.isVega}', \`isVegan\`='${meal.isVegan}', \`isToTakeHome\`='${meal.isToTakeHome}' WHERE \`id\`=${mealId}`;
-
+                const updateMealSql = `UPDATE \`meal\` SET \`price\`='${meal.price}', \`name\`='${meal.name}', \`maxAmountOfParticipants\`='${meal.maxAmountOfParticipants}' WHERE \`id\`=${mealId}`;
                 conn.query(updateMealSql, (err, results, fields) => {
                     conn.release();
 
