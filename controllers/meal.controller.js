@@ -7,104 +7,6 @@ const pool = require('../utils/mysql-db');
 //Getmeal dates return null
 
 const mealController = {
-    createMeal2: (req, res, next) => {
-        console.log('Creating a meal');
-
-
-        const newMeal = {
-            isActive,
-            isVega,
-            isVegan,
-            isToTakeHome,
-            //dateTime,
-            maxAmountOfParticipants,
-            price,
-            imageUrl,
-            cookId,
-            name,
-            description,
-            allergenes
-        } = {...req.body, cookId: req.userId };
-
-        try {
-            console.log('Validating input data');
-            // assert(typeof isActive === 'number', 'isActive must be a number');
-            // assert(typeof isVega === 'number', 'isVega must be a number');
-            // assert(typeof isVegan === 'number', 'isVegan must be a number');
-            // assert(typeof isToTakeHome === 'number', 'isToTakeHome must be a number');
-            // assert(typeof maxAmountOfParticipants === 'number', 'maxAmountOfParticipants must be a number');
-            // assert(typeof price === 'string', 'price must be a string');
-            // assert(typeof imageUrl === 'string', 'imageUrl must be a string');
-            // assert(typeof cookId === 'number', 'cookId must be a number');
-            // assert(typeof name === 'string', 'name must be a string');
-            // assert(typeof description === 'string', 'description must be a string');
-            // assert(typeof allergenes === 'string', 'allergenes must be a string');
-
-            pool.getConnection(function(err, conn) {
-                if (err) {
-                    console.log('Error: Failed to establish a database connection');
-                    next({
-                        status: 500,
-                        message: 'Internal Server Error'
-                    });
-                }
-
-                if (conn) {
-                    console.log('Executing database query');
-                    let sqlInsertStatement = "INSERT INTO meal SET ?";
-
-                    conn.query(sqlInsertStatement, newMeal, function(err, results, fields) {
-                        if (err) {
-                            if (err.code === 'ER_DUP_ENTRY') {
-                                console.log('Error: Duplicate entry');
-                                res.status(403).json({
-                                    status: 403,
-                                    message: 'Meal already exists.',
-                                    data: {}
-                                });
-                            } else {
-                                console.log('Error: Failed to execute insert query', err);
-                                next({
-                                    status: 500,
-                                    message: 'Internal Server Error'
-                                });
-                            }
-                        } else {
-                            const newMealId = results.insertId;
-                            console.log('Meal created successfully');
-                            res.status(201).json({
-                                status: 201,
-                                message: `Meal with ID ${newMealId} has been added`,
-                                data: {
-                                    id: newMealId,
-                                    isActive,
-                                    isVega,
-                                    isVegan,
-                                    isToTakeHome,
-                                    //dateTime,
-                                    maxAmountOfParticipants,
-                                    price,
-                                    imageUrl,
-                                    cookId,
-                                    name,
-                                    description,
-                                    allergenes
-                                }
-                            });
-                        }
-                        pool.releaseConnection(conn);
-                    });
-                }
-            });
-        } catch (err) {
-            console.log('Error: Validation failed', err);
-            res.status(400).json({
-                status: 400,
-                message: err.toString(),
-                data: {},
-            });
-        }
-    },
     createMeal: (req, res, next) => {
         // CHECK IF LOGGED IN
         if (!req.userId) {
@@ -115,44 +17,27 @@ const mealController = {
             });
         }
 
-        let meal;
 
-        if (!req.body.id) {
-            meal = {
-                isActive: req.body.isActive,
-                isVega: req.body.isVega,
-                isVegan: req.body.isVegan,
-                isToTakeHome: req.body.isToTakeHome,
-                dateTime: req.body.dateTime,
-                maxAmountOfParticipants: req.body.maxAmountOfParticipants,
-                price: req.body.price,
-                createDate: req.body.createDate,
-                updateDate: req.body.updateDate,
-                imageUrl: req.body.imageUrl,
-                cookId: req.userId,
-                name: req.body.name,
-                description: req.body.description,
-                allergenes: req.body.allergenes
-            };
-        } else {
-            meal = {
-                id: req.body.id,
-                isActive: req.body.isActive,
-                isVega: req.body.isVega,
-                isVegan: req.body.isVegan,
-                isToTakeHome: req.body.isToTakeHome,
-                dateTime: req.body.dateTime,
-                maxAmountOfParticipants: req.body.maxAmountOfParticipants,
-                price: req.body.price,
-                createDate: req.body.createDate,
-                updateDate: req.body.updateDate,
-                imageUrl: req.body.imageUrl,
-                cookId: req.userId,
-                name: req.body.name,
-                description: req.body.description,
-                allergenes: req.body.allergenes
-            };
-        }
+        const currentDate = new Date().toISOString();
+
+        const meal = {
+            id: req.body.id,
+            isActive: req.body.isActive !== undefined ? req.body.isActive : 1,
+            isVega: req.body.isVega !== undefined ? req.body.isVega : 0,
+            isVegan: req.body.isVegan !== undefined ? req.body.isVegan : 0,
+            isToTakeHome: req.body.isToTakeHome !== undefined ? req.body.isToTakeHome : 1,
+            dateTime: req.body.dateTime || currentDate,
+            maxAmountOfParticipants: req.body.maxAmountOfParticipants,
+            price: req.body.price,
+            createDate: req.body.createDate || currentDate,
+            updateDate: req.body.updateDate || currentDate,
+            imageUrl: req.body.imageUrl,
+            cookId: req.userId,
+            name: req.body.name,
+            description: req.body.description,
+            allergenes: req.body.allergenes
+        };
+
 
 
         // ASSERT

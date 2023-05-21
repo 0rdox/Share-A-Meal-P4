@@ -73,33 +73,17 @@ const userController = {
         });
     },
     createUser: (req, res, next) => {
-
-        let user;
-
-        if (!req.body.id) {
-            user = {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                street: req.body.street,
-                city: req.body.city,
-                isActive: req.body.isActive === undefined ? true : req.body.isActive,
-                emailAdress: req.body.emailAdress,
-                phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
-            };
-        } else {
-            user = {
-                id: req.body.id,
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                street: req.body.street,
-                city: req.body.city,
-                isActive: req.body.isActive === undefined ? true : req.body.isActive,
-                emailAdress: req.body.emailAdress,
-                phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
-            };
-        }
+        const user = {
+            id: req.body.id,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            street: req.body.street,
+            city: req.body.city,
+            isActive: req.body.isActive === undefined ? true : req.body.isActive,
+            emailAdress: req.body.emailAdress,
+            phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
+        };
 
 
         //ASSERT
@@ -147,7 +131,7 @@ const userController = {
                         res.status(201).json({
                             status: 201,
                             message: `User with Email-Address ${user.emailAdress} has been created`,
-                            data: { user },
+                            data: user,
                         });
                     }
                     conn.release();
