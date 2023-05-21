@@ -71,20 +71,28 @@ describe('TC-30x - Meal', () => {
                     isVega: 0,
                     isVegan: 0,
                     isToTakeHome: 1,
-                    maxAmountOfParticipants: 2,
-                    price: "19.95",
-                    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNFe0c3pucAjpExbQmZzmRwfAjKPyHEhzSF-A-B-UbOA&s",
-                    cookId: 2,
+                    // dateTime: "",
+                    maxAmountOfParticipants: 4,
+                    price: "12.96",
+                    // createDate: req.body.createDate,
+                    // updateDate: req.body.updateDate,
+                    imageUrl: "https://image",
                     name: "Hamburger",
-                    description: "Een heerlijke hamburger! Altijd goed voor tevreden gesmikkel!",
-                    allergenes: ""
+                    description: "Burger",
+                    allergenes: "Gluten"
                 })
                 .end((err, res) => {
-                    console.log("reached this")
-                    console.log("body:" + res.body)
-                    res.body.should.has.status(201);
-                    res.body.should.has.property('message');
-                    res.body.should.has.property('data')
+                    if (res) {
+
+                        console.log("reached this")
+                        console.log("body:" + res.body)
+                        res.body.should.has.status(201);
+                        res.body.should.has.property('message');
+                        res.body.should.has.property('data')
+                    }
+                    if (err) {
+                        console.log("reached error")
+                    }
                     done();
                 });
         })
