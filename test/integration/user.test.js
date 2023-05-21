@@ -158,7 +158,7 @@ describe('TC-20x - User', () => {
                     res.body.should.has.property('status', 201);
                     res.body.should.has.property('message');
                     res.body.should.has.property('data').to.not.be.empty;
-                    let { user } = res.body.data;
+                    let user = res.body.data;
                     user.firstName.should.be.a('string').to.be.equal('Mike');
                     user.lastName.should.be.a('string').to.be.equal('Peters');
                     user.emailAdress.should.be.a('string').to.be.equal('m.peters@avans.nl');
