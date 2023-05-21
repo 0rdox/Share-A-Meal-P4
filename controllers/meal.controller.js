@@ -1,10 +1,6 @@
 const assert = require('assert');
 const pool = require('../utils/mysql-db');
 
-//TODO:
-//Createmeal works, uses the CookId from logged in user.
-//deletemeal works, if user is not the owner it can't be deleted
-//Getmeal dates return null
 
 const mealController = {
     createMeal: (req, res, next) => {
@@ -285,7 +281,6 @@ const mealController = {
             });
         });
     },
-
     deleteMeal: (req, res, next) => {
         const mealId = parseInt(req.params.mealid);
 
